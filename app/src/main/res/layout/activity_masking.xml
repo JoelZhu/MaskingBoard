@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/textBg">
+
+    <LinearLayout
+        android:id="@+id/kenshin_finishLayout"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <LinearLayout
+            android:id="@+id/kenshin_buttonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/kenshin_clear"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/textBg"
+                android:drawableTop="@drawable/return_icon_selector"
+                android:gravity="bottom|center"
+                android:text="１つ前に戻る"
+                android:textColor="@drawable/masking_left_text_selector"
+                android:textSize="10dp" />
+
+            <Button
+                android:id="@+id/kenshin_rotate"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/textBg"
+                android:drawableTop="@drawable/rotation_icon_selector"
+                android:gravity="bottom|center"
+                android:text="右に90°回転"
+                android:textColor="@drawable/masking_left_text_selector"
+                android:textSize="10dp" />
+
+            <Button
+                android:id="@+id/kenshin_masking"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/textBg"
+                android:drawableTop="@drawable/fill_icon_selector"
+                android:gravity="bottom|center"
+                android:text="塗りつぶし"
+                android:textColor="@drawable/masking_right_text_selector"
+                android:textSize="10dp" />
+
+            <Button
+                android:id="@+id/kenshin_draft"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/textBg"
+                android:drawableTop="@drawable/zoom_icon_selector"
+                android:gravity="bottom|center"
+                android:text="移動/拡大"
+                android:textColor="@drawable/masking_right_text_selector"
+                android:textSize="10dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/kenshin_finish"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_masking_selector"
+            android:gravity="center"
+            android:text="完了"
+            android:textColor="@color/textBg"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/kenshin_finishLayout"
+        android:layout_below="@id/kenshin_buttonLayout">
+
+        <com.joelzhu.maskingboard.views.MaskingView
+            android:id="@+id/maskingView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#464646"
+            android:scaleType="matrix" />
+
+        <TextView
+            android:id="@+id/kenshin_maskingHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/maskingHint"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/kenshin_masking_hint"
+            android:textColor="@color/textBg" />
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/kenshin_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/qr_code_progress"
+        android:padding="8dp"
+        android:visibility="gone" />
+</RelativeLayout>

@@ -1,6 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-</resources>
+
+    <color name="textLink">#2563C0</color>
+    <color name="baseText">#252525</color>
+    <color name="secondaryText">#666666</color>
+    <color name="textBg">#FFFFFF</color>
+    <color name="maskingHint">#99000000</color>
+    <color name="kenshinMainColor">#00AAB9</color>
+    <color name="kenshinPressColor">#9900AAB9</color>
+    <color name="kenshinUnabledColor">#DBDBDB</color>
+    <color name="kenshinDeleteColor">#808080</color>
+    <color name="kenshinCollectionBackground">#EAEAEA</color>
+    <color name="kenshinTextColor">#111111</color>
+    <color name="kenshinDividerColor">#C4C4C4</color>
+    <color name="kenshinTextDownColor">#CDCDCD</color>
+</resources> 

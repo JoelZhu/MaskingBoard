@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/textBg">
+
+    <LinearLayout
+        android:id="@+id/kenshin_bottomView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@color/textBg"
+        android:gravity="center"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:textColor="@color/baseText"
+        android:textSize="15dp">
+
+        <com.joelzhu.maskingboard.views.RoundButton
+            android:id="@+id/kenshin_takePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/kenshin_bottomView">
+
+        <TextureView
+            android:id="@+id/kenshin_texture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/maskingHint"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/kenshin_camera_hint"
+            android:textColor="@color/textBg" />
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/kenshin_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/qr_code_progress"
+        android:padding="8dp"
+        android:visibility="gone" />
+</RelativeLayout>

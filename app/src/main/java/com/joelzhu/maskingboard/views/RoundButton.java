@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.joelzhu.maskingboard.utils.DisplayUtils;
+
 /**
  * 自定义控件 - 圆形按钮
  *
@@ -84,13 +86,13 @@ public class RoundButton extends View {
         if (widthMode == MeasureSpec.EXACTLY) {
             width = widthSize;
         } else {
-            width = Dp2px(70);
+            width = DisplayUtils.dp2Px(getContext(), 70);
         }
 
         if (heightMode == MeasureSpec.EXACTLY) {
             height = heightSize;
         } else {
-            height = Dp2px(70);
+            height = DisplayUtils.dp2Px(getContext(), 70);
         }
 
         if (width <= height) {
@@ -121,11 +123,6 @@ public class RoundButton extends View {
         paint.reset();
         paint.setAntiAlias(true);
         paint.setColor(Color.argb(255, 128, 128, 128));
-        canvas.drawCircle(diameter / 2, diameter / 2, diameter / 2 * 6 / 7 - Dp2px(3), paint);
-    }
-
-    private int Dp2px(float dpValue) {
-        float scale = getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
+        canvas.drawCircle(diameter / 2, diameter / 2, diameter / 2 * 6 / 7 - DisplayUtils.dp2Px(getContext(), 3), paint);
     }
 }
