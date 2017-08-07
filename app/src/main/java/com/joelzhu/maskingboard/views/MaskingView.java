@@ -71,6 +71,18 @@ public class MaskingView extends AppCompatImageView {
      * 构造函数
      *
      * @param context 上下文对象
+     */
+    public MaskingView(Context context) {
+        super(context);
+
+        // 初始化控件
+        initWidget();
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param context 上下文对象
      * @param attrs   属性对象
      */
     public MaskingView(Context context, AttributeSet attrs) {
