@@ -38,8 +38,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
     private Button clearButton, maskingButton, draftButton, finishButton, rotateButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_masking);
@@ -51,53 +50,43 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
 
 //        if (!"content".equals(uri.getScheme()))
 //        {
-            bitmap = BitmapFactory.decodeFile(uri.getPath());
+        bitmap = BitmapFactory.decodeFile(uri.getPath());
 //        }
 //        else
 //        {
 //            bitmap = BitmapFactory.decodeFile(FileUtil.GetPath(this, uri));
 //        }
 
-        if (bitmap != null)
-        {
+        if (bitmap != null) {
             Matrix matrix = new Matrix();
-            if (rotateDegree != 0)
-            {
+            if (rotateDegree != 0) {
                 matrix.setRotate(rotateDegree);
             }
 
             int bitmapWidth = bitmap.getWidth();
             int bitmapHeight = bitmap.getHeight();
             Bitmap destBitmap;
-            if (bitmapWidth > originMax || bitmapHeight > originMax)
-            {
+            if (bitmapWidth > originMax || bitmapHeight > originMax) {
                 float scale;
 
-                if (bitmapWidth > bitmapHeight)
-                {
-                    scale = (float)originMax / bitmap.getWidth();
+                if (bitmapWidth > bitmapHeight) {
+                    scale = (float) originMax / bitmap.getWidth();
                     bitmapWidth = originMax;
-                    bitmapHeight = (int)(scale * bitmap.getHeight());
-                }
-                else
-                {
-                    scale = (float)originMax / bitmap.getHeight();
-                    bitmapWidth = (int)(scale * bitmap.getWidth());
+                    bitmapHeight = (int) (scale * bitmap.getHeight());
+                } else {
+                    scale = (float) originMax / bitmap.getHeight();
+                    bitmapWidth = (int) (scale * bitmap.getWidth());
                     bitmapHeight = originMax;
                 }
 
                 matrix.setScale(scale, scale);
                 destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            }
-            else
-            {
+            } else {
                 destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
             }
 
             maskingView.setImageBitmap(destBitmap);
-        }
-        else
-        {
+        } else {
             Log.d(Consts.LogTag, "Masking OnCreate bitmap is null");
         }
 
@@ -110,28 +99,23 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
 
-        if (bitmap != null)
-        {
+        if (bitmap != null) {
             bitmap.recycle();
             bitmap = null;
         }
     }
 
     @Override
-    public void onClick(View view)
-    {
+    public void onClick(View view) {
         // if we're saving or rotating bitmap, do nothing when user click any button on the screen
-        if (isProcessing)
-        {
+        if (isProcessing) {
             return;
         }
 
-        switch (view.getId())
-        {
+        switch (view.getId()) {
             // remove last path
             case R.id.kenshin_clear:
                 maskingView.goBack();
@@ -163,16 +147,15 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         }
     }
 
-    private void InitWidgetOnTheScreen()
-    {
-        maskingView = (MaskingView)findViewById(R.id.maskingView);
-        progressBar = (ProgressBar)findViewById(R.id.kenshin_progressbar);
+    private void InitWidgetOnTheScreen() {
+        maskingView = (MaskingView) findViewById(R.id.maskingView);
+        progressBar = (ProgressBar) findViewById(R.id.kenshin_progressbar);
 
-        clearButton = (Button)findViewById(R.id.kenshin_clear);
-        maskingButton = (Button)findViewById(R.id.kenshin_masking);
-        draftButton = (Button)findViewById(R.id.kenshin_draft);
-        finishButton = (Button)findViewById(R.id.kenshin_finish);
-        rotateButton = (Button)findViewById(R.id.kenshin_rotate);
+        clearButton = (Button) findViewById(R.id.kenshin_clear);
+        maskingButton = (Button) findViewById(R.id.kenshin_masking);
+        draftButton = (Button) findViewById(R.id.kenshin_draft);
+        finishButton = (Button) findViewById(R.id.kenshin_finish);
+        rotateButton = (Button) findViewById(R.id.kenshin_rotate);
         clearButton.setOnClickListener(this);
         maskingButton.setOnClickListener(this);
         draftButton.setOnClickListener(this);
@@ -189,20 +172,15 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
     /// <summary>
     /// run when paths sum changed
     /// </summary>
-    public void OnPathCountChange()
-    {
-        if (maskingView.canGoBack())
-        {
+    public void OnPathCountChange() {
+        if (maskingView.canGoBack()) {
             clearButton.setEnabled(true);
-        }
-        else
-        {
+        } else {
             clearButton.setEnabled(false);
         }
     }
 
-    private void RotateMaskingView()
-    {
+    private void RotateMaskingView() {
         new AsyncTask<String, Integer, Boolean>() {
             List<Path> tempPath;
             float scale;
@@ -224,23 +202,19 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
                 // rotate the bitmap get from imageview
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
-                if (tempBitmap != null && !tempBitmap.isRecycled())
-                {
+                if (tempBitmap != null && !tempBitmap.isRecycled()) {
                     final Bitmap destBitmap = Bitmap.createBitmap(tempBitmap, 0, 0,
                             tempBitmap.getWidth(), tempBitmap.getHeight(), matrix, false);
                     tempBitmap.recycle();
                     tempBitmap = null;
-                    if (destBitmap != null)
-                    {
+                    if (destBitmap != null) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                BitmapDrawable drawable = (BitmapDrawable)maskingView.getDrawable();
-                                if (drawable != null)
-                                {
+                                BitmapDrawable drawable = (BitmapDrawable) maskingView.getDrawable();
+                                if (drawable != null) {
                                     Bitmap temp = drawable.getBitmap();
-                                    if (temp != null)
-                                    {
+                                    if (temp != null) {
                                         temp.recycle();
                                         temp = null;
                                     }
@@ -250,9 +224,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
                             }
                         });
                     }
-                }
-                else
-                {
+                } else {
                     Log.d(Consts.LogTag, "Get Bitmap From ImageView Failed or Bitmap is Recycled...");
                 }
 
@@ -267,8 +239,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         }.execute();
     }
 
-    private void SaveBitmapToFile()
-    {
+    private void SaveBitmapToFile() {
         new AsyncTask<String, Integer, Boolean>() {
             @Override
             protected void onPreExecute() {
@@ -303,12 +274,10 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         }.execute();
     }
 
-    private void SaveToFile() throws Exception
-    {
+    private void SaveToFile() throws Exception {
         bitmap = maskingView.getViewBitmap();
 
-        if (bitmap == null)
-        {
+        if (bitmap == null) {
             Log.d(Consts.LogTag, "Masking GetFile bitmap is null");
         }
 

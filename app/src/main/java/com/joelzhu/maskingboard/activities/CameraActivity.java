@@ -59,13 +59,12 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
     private boolean isFirst = true;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_camera);
 
-        takePicture = (RoundButton)findViewById(R.id.kenshin_takePicture);
+        takePicture = (RoundButton) findViewById(R.id.kenshin_takePicture);
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,58 +73,48 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
             }
         });
 
-        textureView = (TextureView)findViewById(R.id.kenshin_texture);
+        textureView = (TextureView) findViewById(R.id.kenshin_texture);
         textureView.setSurfaceTextureListener(this);
 
-        progressBar = (ProgressBar)findViewById(R.id.kenshin_progressbar);
+        progressBar = (ProgressBar) findViewById(R.id.kenshin_progressbar);
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
         takePicture.setEnabled(true);
 
 //        StartAutoFocus();
 
-        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
 
         sensorManager.unregisterListener(this);
     }
 
     @Override
-    public void onPictureTaken(final byte[] data, Camera camera)
-    {
+    public void onPictureTaken(final byte[] data, Camera camera) {
         progressBar.setVisibility(View.VISIBLE);
 
-        if (camera != null)
-        {
+        if (camera != null) {
             camera.stopPreview();
 
             int ori = cameraOri;
-            if (Math.abs(gravityX) > Math.abs(gravityY))
-            {
-                if (gravityX > 0)
-                {
+            if (Math.abs(gravityX) > Math.abs(gravityY)) {
+                if (gravityX > 0) {
                     ori -= 90;
                 }
-                if (gravityX < 0)
-                {
+                if (gravityX < 0) {
                     ori += 90;
                 }
-            }
-            else
-            {
-                if (gravityY < 0)
-                {
+            } else {
+                if (gravityY < 0) {
                     ori -= 180;
                 }
             }
@@ -145,31 +134,26 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                     }
 
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    float widthRate = (float)bitmap.getWidth() / textureHeight;
-                    float heightRate = (float)bitmap.getHeight() / textureWidth;
+                    float widthRate = (float) bitmap.getWidth() / textureHeight;
+                    float heightRate = (float) bitmap.getHeight() / textureWidth;
                     float bitmapRate = widthRate < heightRate ? widthRate : heightRate;
 
                     Bitmap tempBitmap = Bitmap.createBitmap(bitmap,
-                            (int)((bitmap.getWidth() - textureHeight * bitmapRate) / 2),
-                            (int)((bitmap.getHeight() - textureWidth * bitmapRate) / 2),
-                            (int)(textureHeight * bitmapRate),
-                            (int)(textureWidth * bitmapRate));
+                            (int) ((bitmap.getWidth() - textureHeight * bitmapRate) / 2),
+                            (int) ((bitmap.getHeight() - textureWidth * bitmapRate) / 2),
+                            (int) (textureHeight * bitmapRate),
+                            (int) (textureWidth * bitmapRate));
 
                     int destWidth, destHeight;
-                    if (tempBitmap != null)
-                    {
+                    if (tempBitmap != null) {
                         destWidth = tempBitmap.getWidth();
                         destHeight = tempBitmap.getHeight();
-                        if (destWidth > ORIGIN_MAX || destHeight > ORIGIN_MAX)
-                        {
-                            if (destWidth > destHeight)
-                            {
+                        if (destWidth > ORIGIN_MAX || destHeight > ORIGIN_MAX) {
+                            if (destWidth > destHeight) {
                                 destWidth = ORIGIN_MAX;
-                                destHeight = (int)(((float)ORIGIN_MAX / tempBitmap.getWidth()) * tempBitmap.getHeight());
-                            }
-                            else
-                            {
-                                destWidth = (int)(((float)ORIGIN_MAX / tempBitmap.getHeight()) * tempBitmap.getWidth());
+                                destHeight = (int) (((float) ORIGIN_MAX / tempBitmap.getWidth()) * tempBitmap.getHeight());
+                            } else {
+                                destWidth = (int) (((float) ORIGIN_MAX / tempBitmap.getHeight()) * tempBitmap.getWidth());
                                 destHeight = ORIGIN_MAX;
                             }
                         }
@@ -214,26 +198,21 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
     }
 
     @Override
-    public void onSensorChanged(SensorEvent e)
-    {
-        if (e.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-        {
+    public void onSensorChanged(SensorEvent e) {
+        if (e.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             gravityX = e.values[0];
             gravityY = e.values[1];
         }
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height)
-    {
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         InitCamera(surface);
     }
 
     @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface)
-    {
-        if (camera != null)
-        {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        if (camera != null) {
             camera.stopPreview();
             camera.release();
             camera = null;
@@ -243,22 +222,18 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
     }
 
     @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height)
-    {
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         // do nothing
     }
 
     @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface)
-    {
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
         // do nothing
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        if (requestCode == CAMERA_PERMISSION_REQUEST)
-        {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
             //if (!DeviceUtil.IsGrantedCameraPermission(this))
             //{
             //	var intent = new Intent(this, typeof(CaradaWebViewActivity));
@@ -275,8 +250,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
         }
     }
 
-    private void InitCamera(SurfaceTexture surface)
-    {
+    private void InitCamera(SurfaceTexture surface) {
         // TODO deal with permission
         //if (!DeviceUtil.IsGrantedCameraPermission(this))
         //{
@@ -290,13 +264,11 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
         //}
         //else
         //{
-        if (Camera.getNumberOfCameras() == 0)
-        {
+        if (Camera.getNumberOfCameras() == 0) {
 //            System.Diagnostics.Debug.WriteLine("Cemera not supported.");
             return;
         }
-        if (camera == null)
-        {
+        if (camera == null) {
             camera = Camera.open();
             if (camera == null)
                 camera = Camera.open(0);
@@ -304,8 +276,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
 
         SetCameraDisplayOrientation(0);
 
-        if (isFirst)
-        {
+        if (isFirst) {
             textureWidth = textureView.getWidth();
             textureHeight = textureView.getHeight();
             isFirst = false;
@@ -313,15 +284,12 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
 
         Camera.Parameters param = camera.getParameters();
         Camera.Size previewSize = param.getPreviewSize();
-        if (previewSize.width >= textureView.getHeight() && previewSize.height >= textureView.getWidth())
-        {
+        if (previewSize.width >= textureView.getHeight() && previewSize.height >= textureView.getWidth()) {
             previewWidth = previewSize.width;
             previewHeight = previewSize.height;
 
             textureView.setLayoutParams(new FrameLayout.LayoutParams(previewHeight, previewWidth, Gravity.CENTER));
-        }
-        else
-        {
+        } else {
             List<Camera.Size> previewSizes = param.getSupportedPreviewSizes();
             Collections.sort(previewSizes, new Comparator<Camera.Size>() {
                 @Override
@@ -331,17 +299,12 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
             });
             Camera.Size maxSize = previewSizes.get(0);
 
-            if (maxSize.width >= textureView.getHeight() && maxSize.height >= textureView.getWidth())
-            {
-                for (Camera.Size size : previewSizes)
-                {
-                    if (size.width >= textureView.getHeight() && size.height >= textureView.getWidth())
-                    {
+            if (maxSize.width >= textureView.getHeight() && maxSize.height >= textureView.getWidth()) {
+                for (Camera.Size size : previewSizes) {
+                    if (size.width >= textureView.getHeight() && size.height >= textureView.getWidth()) {
                         previewWidth = size.width;
                         previewHeight = size.height;
-                    }
-                    else
-                    {
+                    } else {
                         break;
                     }
                 }
@@ -349,31 +312,26 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                 param.setPreviewSize(previewWidth, previewHeight);
                 camera.setParameters(param);
                 textureView.setLayoutParams(new FrameLayout.LayoutParams(previewHeight, previewWidth, Gravity.CENTER));
-            }
-            else
-            {
+            } else {
                 previewWidth = maxSize.width;
                 previewHeight = maxSize.height;
 
                 float matchestWidth = maxSize.height;
                 float matchestHeight = maxSize.width;
 
-                if ((float)maxSize.height / textureView.getWidth() > (float)maxSize.width / textureView.getHeight())
-                {
+                if ((float) maxSize.height / textureView.getWidth() > (float) maxSize.width / textureView.getHeight()) {
                     matchestHeight = textureView.getHeight();
-                    rate = (float)textureView.getHeight() / maxSize.width;
+                    rate = (float) textureView.getHeight() / maxSize.width;
                     matchestWidth = rate * maxSize.height;
-                }
-                else
-                {
+                } else {
                     matchestWidth = textureView.getWidth();
-                    rate = (float)textureView.getWidth() / maxSize.height;
+                    rate = (float) textureView.getWidth() / maxSize.height;
                     matchestHeight = rate * maxSize.width;
                 }
 
                 param.setPreviewSize(previewWidth, previewHeight);
                 camera.setParameters(param);
-                textureView.setLayoutParams(new FrameLayout.LayoutParams((int)matchestWidth, (int)matchestHeight, Gravity.CENTER));
+                textureView.setLayoutParams(new FrameLayout.LayoutParams((int) matchestWidth, (int) matchestHeight, Gravity.CENTER));
             }
         }
 
@@ -385,39 +343,32 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
             }
         });
         param.setPictureSize(pictureSizes.get(pictureSizes.size() - 1).width, pictureSizes.get(pictureSizes.size() - 1).height);
-        for (Camera.Size size : pictureSizes)
-        {
-            if (size.width > ORIGIN_MAX && size.height > ORIGIN_MAX)
-            {
+        for (Camera.Size size : pictureSizes) {
+            if (size.width > ORIGIN_MAX && size.height > ORIGIN_MAX) {
                 param.setPictureSize(size.width, size.height);
                 break;
             }
         }
         camera.setParameters(param);
 
-        try
-        {
+        try {
             SetCamFocusMode();
             camera.setPreviewTexture(surface);
             camera.startPreview();
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
 //            Console.WriteLine(ex.Message);
         }
         //}
     }
 
-    private void SetCameraDisplayOrientation(int cameraId)
-    {
+    private void SetCameraDisplayOrientation(int cameraId) {
         // 获取相机信息对象
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, cameraInfo);
         // ディスプレイの向き取得
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         degrees = 0;
-        switch (rotation)
-        {
+        switch (rotation) {
             case Surface.ROTATION_0:
                 degrees = 0;
                 break;
@@ -432,12 +383,10 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                 break;
         }
         // プレビューの向き計算
-        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
-        {
+        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             cameraOri = (cameraInfo.orientation + degrees) % 360;
             cameraOri = (360 - cameraOri) % 360; // compensate the mirror
-        }
-        else { // back-facing
+        } else { // back-facing
             cameraOri = (cameraInfo.orientation - degrees + 360) % 360;
         }
         // ディスプレイの向き設定
@@ -447,10 +396,8 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
     /// <summary>
     /// プレビューのぼやけを解消する
     /// </summary>
-    private void SetCamFocusMode()
-    {
-        if (null == camera)
-        {
+    private void SetCamFocusMode() {
+        if (null == camera) {
             return;
         }
 
