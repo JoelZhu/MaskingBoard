@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/textBg"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/Main_FromCamera"
+        android:layout_width="250dp"
+        android:layout_height="48dp"
+        android:text="From Camera" />
+
+    <Button
+        android:id="@+id/Main_FromGallery"
+        android:layout_width="250dp"
+        android:layout_height="48dp"
+        android:text="From Gallery" />
+</LinearLayout>
