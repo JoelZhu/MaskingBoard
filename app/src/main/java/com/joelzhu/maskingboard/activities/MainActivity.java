@@ -8,16 +8,24 @@ import android.provider.MediaStore;
 import android.view.View;
 
 import com.joelzhu.maskingboard.R;
+import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     private final static int GALLERY_REQUEST_CODE = 101;
+
+    @Override
+    protected LayoutAttrs setLayoutAttributes() {
+        return new LayoutAttrs.Builder()
+                .layout(R.layout.activity_main)
+                .title(R.string.app_name)
+                .hasToolbar(true)
+                .create();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
 
         findViewById(R.id.Main_FromCamera).setOnClickListener(this);
         findViewById(R.id.Main_FromGallery).setOnClickListener(this);
