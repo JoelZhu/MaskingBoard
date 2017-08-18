@@ -265,11 +265,8 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
                 progressBar.setVisibility(View.GONE);
                 isProcessing = false;
 
-//                Intent intent = new Intent(this, KenshinCollectionActivity);
-//                intent.putExtra(Consts.ExtraPictureUri, uri.toString());
-//                startActivity(intent);
-
-                finish();
+                Intent intent = new Intent(MaskingActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         }.execute();
     }

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/textBg"
+    android:orientation="vertical"
     android:gravity="center">
 
     <Button
@@ -15,5 +16,6 @@
         android:id="@+id/Main_FromGallery"
         android:layout_width="250dp"
         android:layout_height="48dp"
+        android:layout_marginTop="48dp"
         android:text="From Gallery" />
 </LinearLayout>
