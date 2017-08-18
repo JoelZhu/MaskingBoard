@@ -5,7 +5,7 @@
     android:background="@color/textBg">
 
     <LinearLayout
-        android:id="@+id/kenshin_finishLayout"
+        android:id="@+id/masking_finishLayout"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_alignParentBottom="true"
@@ -15,7 +15,7 @@
         android:paddingRight="16dp">
 
         <LinearLayout
-            android:id="@+id/kenshin_buttonLayout"
+            android:id="@+id/masking_buttonLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
@@ -25,7 +25,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/kenshin_clear"
+                android:id="@+id/masking_goBack"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -33,12 +33,12 @@
                 android:background="@color/textBg"
                 android:drawableTop="@drawable/return_icon_selector"
                 android:gravity="bottom|center"
-                android:text="１つ前に戻る"
+                android:text="回退"
                 android:textColor="@drawable/masking_left_text_selector"
                 android:textSize="10dp" />
 
             <Button
-                android:id="@+id/kenshin_rotate"
+                android:id="@+id/masking_rotate"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -46,12 +46,12 @@
                 android:background="@color/textBg"
                 android:drawableTop="@drawable/rotation_icon_selector"
                 android:gravity="bottom|center"
-                android:text="右に90°回転"
+                android:text="右转90度"
                 android:textColor="@drawable/masking_left_text_selector"
                 android:textSize="10dp" />
 
             <Button
-                android:id="@+id/kenshin_masking"
+                android:id="@+id/masking_masking"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -59,12 +59,12 @@
                 android:background="@color/textBg"
                 android:drawableTop="@drawable/fill_icon_selector"
                 android:gravity="bottom|center"
-                android:text="塗りつぶし"
+                android:text="涂鸦"
                 android:textColor="@drawable/masking_right_text_selector"
                 android:textSize="10dp" />
 
             <Button
-                android:id="@+id/kenshin_draft"
+                android:id="@+id/masking_draft"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -72,13 +72,13 @@
                 android:background="@color/textBg"
                 android:drawableTop="@drawable/zoom_icon_selector"
                 android:gravity="bottom|center"
-                android:text="移動/拡大"
+                android:text="移动／缩放"
                 android:textColor="@drawable/masking_right_text_selector"
                 android:textSize="10dp" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/kenshin_finish"
+            android:id="@+id/masking_finish"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -87,7 +87,7 @@
             android:layout_weight="1"
             android:background="@drawable/button_masking_selector"
             android:gravity="center"
-            android:text="完了"
+            android:text="完成"
             android:textColor="@color/textBg"
             android:textSize="17sp" />
     </LinearLayout>
@@ -95,18 +95,18 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/kenshin_finishLayout"
-        android:layout_below="@id/kenshin_buttonLayout">
+        android:layout_above="@id/masking_finishLayout"
+        android:layout_below="@id/masking_buttonLayout">
 
         <com.joelzhu.maskingboard.views.MaskingView
-            android:id="@+id/maskingView"
+            android:id="@+id/masking_maskingView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#464646"
             android:scaleType="matrix" />
 
         <TextView
-            android:id="@+id/kenshin_maskingHint"
+            android:id="@+id/masking_maskingHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/maskingHint"
@@ -116,13 +116,4 @@
             android:text="@string/kenshin_masking_hint"
             android:textColor="@color/textBg" />
     </FrameLayout>
-
-    <ProgressBar
-        android:id="@+id/kenshin_progressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@drawable/qr_code_progress"
-        android:padding="8dp"
-        android:visibility="gone" />
 </RelativeLayout>

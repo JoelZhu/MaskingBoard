@@ -1,6 +1,5 @@
 package com.joelzhu.maskingboard.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.joelzhu.maskingboard.R;
+import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
 import com.joelzhu.maskingboard.utils.FileUtils;
 import com.joelzhu.maskingboard.views.RoundButton;
@@ -34,22 +34,17 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class CameraActivity extends Activity implements Camera.PictureCallback, TextureView.SurfaceTextureListener, SensorEventListener {
+public class CameraActivity extends BaseActivity implements Camera.PictureCallback, TextureView.SurfaceTextureListener, SensorEventListener {
     private final static int CAMERA_PERMISSION_REQUEST = 1;
     private final static int ORIGIN_MAX = 2000;
 
     private RoundButton takePicture;
 
-    private int degrees;
-    private int previewWidth;
-    private int previewHeight;
-    private int textureWidth;
-    private int textureHeight;
+    private int previewWidth, previewHeight, textureWidth, textureHeight;
     private float rate = 1;
     private int cameraOri;
 
-    private float gravityX;
-    private float gravityY;
+    private float gravityX, gravityY;
 
     private SensorManager sensorManager;
     private Camera camera;
@@ -59,12 +54,19 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
     private boolean isFirst = true;
 
     @Override
+    protected LayoutAttrs setLayoutAttributes() {
+        return new LayoutAttrs.Builder()
+                .layout(R.layout.activity_camera)
+                .title(R.string.title_camera)
+                .hasToolbar(true)
+                .create();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_camera);
-
-        takePicture = (RoundButton) findViewById(R.id.kenshin_takePicture);
+        takePicture = (RoundButton) findViewById(R.id.camera_takePicture);
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,10 +75,10 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
             }
         });
 
-        textureView = (TextureView) findViewById(R.id.kenshin_texture);
+        textureView = (TextureView) findViewById(R.id.camera_texture);
         textureView.setSurfaceTextureListener(this);
 
-        progressBar = (ProgressBar) findViewById(R.id.kenshin_progressbar);
+        progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
     }
 
     @Override
@@ -119,6 +121,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                 }
             }
 
+            // 启动线程保存拍摄图片
             new AsyncTask<Integer, Integer, Uri>() {
                 int ori;
 
@@ -144,6 +147,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                             (int) (textureHeight * bitmapRate),
                             (int) (textureWidth * bitmapRate));
 
+                    // 控制图片的大小
                     int destWidth, destHeight;
                     if (tempBitmap != null) {
                         destWidth = tempBitmap.getWidth();
@@ -181,6 +185,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
 
                 @Override
                 protected void onPostExecute(Uri uri) {
+                    // 跳转涂鸦页面
                     Intent intent = new Intent(CameraActivity.this, MaskingActivity.class);
                     intent.putExtra(Consts.ExtraPictureUri, uri.toString());
                     intent.putExtra(Consts.ExtraRotateDegree, ori);
@@ -207,7 +212,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        InitCamera(surface);
+        initCamera(surface);
     }
 
     @Override
@@ -250,7 +255,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
         }
     }
 
-    private void InitCamera(SurfaceTexture surface) {
+    private void initCamera(SurfaceTexture surface) {
         // TODO deal with permission
         //if (!DeviceUtil.IsGrantedCameraPermission(this))
         //{
@@ -274,7 +279,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                 camera = Camera.open(0);
         }
 
-        SetCameraDisplayOrientation(0);
+        setCameraDisplayOrientation(0);
 
         if (isFirst) {
             textureWidth = textureView.getWidth();
@@ -316,8 +321,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
                 previewWidth = maxSize.width;
                 previewHeight = maxSize.height;
 
-                float matchestWidth = maxSize.height;
-                float matchestHeight = maxSize.width;
+                float matchestWidth, matchestHeight;
 
                 if ((float) maxSize.height / textureView.getWidth() > (float) maxSize.width / textureView.getHeight()) {
                     matchestHeight = textureView.getHeight();
@@ -352,7 +356,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
         camera.setParameters(param);
 
         try {
-            SetCamFocusMode();
+            setCamFocusMode();
             camera.setPreviewTexture(surface);
             camera.startPreview();
         } catch (IOException ex) {
@@ -361,13 +365,13 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
         //}
     }
 
-    private void SetCameraDisplayOrientation(int cameraId) {
+    private void setCameraDisplayOrientation(int cameraId) {
         // 获取相机信息对象
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, cameraInfo);
         // ディスプレイの向き取得
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
-        degrees = 0;
+        int degrees = 0;
         switch (rotation) {
             case Surface.ROTATION_0:
                 degrees = 0;
@@ -396,7 +400,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback, 
     /// <summary>
     /// プレビューのぼやけを解消する
     /// </summary>
-    private void SetCamFocusMode() {
+    private void setCamFocusMode() {
         if (null == camera) {
             return;
         }

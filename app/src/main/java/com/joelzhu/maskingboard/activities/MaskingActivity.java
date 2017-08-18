@@ -1,6 +1,5 @@
 package com.joelzhu.maskingboard.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +15,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.joelzhu.maskingboard.R;
+import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
 import com.joelzhu.maskingboard.utils.FileUtils;
 import com.joelzhu.maskingboard.views.MaskingView;
@@ -25,27 +25,33 @@ import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
 
-public class MaskingActivity extends Activity implements View.OnClickListener, MaskingView.OnPathCountChangeListener {
-    private final static int originMax = 2000;
+public class MaskingActivity extends BaseActivity implements View.OnClickListener, MaskingView.OnPathCountChangeListener {
+    private final static int ORIGIN_MAX = 2000;
 
     private MaskingView maskingView;
     private Bitmap bitmap;
-    private Uri uri;
     private ProgressBar progressBar;
 
     private boolean isProcessing = false;
 
-    private Button clearButton, maskingButton, draftButton, finishButton, rotateButton;
+    private Button clearButton, maskingButton, draftButton;
+
+    @Override
+    protected LayoutAttrs setLayoutAttributes() {
+        return new LayoutAttrs.Builder()
+                .layout(R.layout.activity_masking)
+                .title(R.string.title_masking)
+                .hasToolbar(true)
+                .create();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_masking);
+        initWidgetOnTheScreen();
 
-        InitWidgetOnTheScreen();
-
-        uri = Uri.parse(getIntent().getStringExtra(Consts.ExtraPictureUri));
+        Uri uri = Uri.parse(getIntent().getStringExtra(Consts.ExtraPictureUri));
         int rotateDegree = getIntent().getIntExtra(Consts.ExtraRotateDegree, 90);
 
 //        if (!"content".equals(uri.getScheme()))
@@ -66,31 +72,29 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
             int bitmapWidth = bitmap.getWidth();
             int bitmapHeight = bitmap.getHeight();
             Bitmap destBitmap;
-            if (bitmapWidth > originMax || bitmapHeight > originMax) {
+            if (bitmapWidth > ORIGIN_MAX || bitmapHeight > ORIGIN_MAX) {
                 float scale;
 
                 if (bitmapWidth > bitmapHeight) {
-                    scale = (float) originMax / bitmap.getWidth();
-                    bitmapWidth = originMax;
+                    scale = (float) ORIGIN_MAX / bitmap.getWidth();
+                    bitmapWidth = ORIGIN_MAX;
                     bitmapHeight = (int) (scale * bitmap.getHeight());
                 } else {
-                    scale = (float) originMax / bitmap.getHeight();
+                    scale = (float) ORIGIN_MAX / bitmap.getHeight();
                     bitmapWidth = (int) (scale * bitmap.getWidth());
-                    bitmapHeight = originMax;
+                    bitmapHeight = ORIGIN_MAX;
                 }
 
                 matrix.setScale(scale, scale);
-                destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            } else {
-                destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
             }
 
+            destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
             maskingView.setImageBitmap(destBitmap);
         } else {
             Log.d(Consts.LogTag, "Masking OnCreate bitmap is null");
         }
 
-        View maskingHint = findViewById(R.id.kenshin_maskingHint);
+        View maskingHint = findViewById(R.id.masking_maskingHint);
         int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         maskingHint.measure(w, h);
@@ -117,50 +121,48 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
 
         switch (view.getId()) {
             // remove last path
-            case R.id.kenshin_clear:
+            case R.id.masking_goBack:
                 maskingView.goBack();
                 break;
 
             // select masking mode
-            case R.id.kenshin_masking:
+            case R.id.masking_masking:
                 maskingView.setMaskingMode(true);
                 maskingButton.setSelected(true);
                 draftButton.setSelected(false);
                 break;
 
             // select drafting mode
-            case R.id.kenshin_draft:
+            case R.id.masking_draft:
                 maskingView.setMaskingMode(false);
                 maskingButton.setSelected(false);
                 draftButton.setSelected(true);
                 break;
 
             // rotate view
-            case R.id.kenshin_rotate:
-                RotateMaskingView();
+            case R.id.masking_rotate:
+                rotateMaskingView();
                 break;
 
             // save bitmap
-            case R.id.kenshin_finish:
-                SaveBitmapToFile();
+            case R.id.masking_finish:
+                saveBitmapToFile();
                 break;
         }
     }
 
-    private void InitWidgetOnTheScreen() {
-        maskingView = (MaskingView) findViewById(R.id.maskingView);
-        progressBar = (ProgressBar) findViewById(R.id.kenshin_progressbar);
+    private void initWidgetOnTheScreen() {
+        maskingView = (MaskingView) findViewById(R.id.masking_maskingView);
+        progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
 
-        clearButton = (Button) findViewById(R.id.kenshin_clear);
-        maskingButton = (Button) findViewById(R.id.kenshin_masking);
-        draftButton = (Button) findViewById(R.id.kenshin_draft);
-        finishButton = (Button) findViewById(R.id.kenshin_finish);
-        rotateButton = (Button) findViewById(R.id.kenshin_rotate);
+        clearButton = (Button) findViewById(R.id.masking_goBack);
+        maskingButton = (Button) findViewById(R.id.masking_masking);
+        draftButton = (Button) findViewById(R.id.masking_draft);
         clearButton.setOnClickListener(this);
         maskingButton.setOnClickListener(this);
         draftButton.setOnClickListener(this);
-        finishButton.setOnClickListener(this);
-        rotateButton.setOnClickListener(this);
+        findViewById(R.id.masking_finish).setOnClickListener(this);
+        findViewById(R.id.masking_rotate).setOnClickListener(this);
 
         clearButton.setEnabled(false);
         draftButton.setSelected(true);
@@ -169,10 +171,8 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         maskingView.setMaskingMode(false);
     }
 
-    /// <summary>
-    /// run when paths sum changed
-    /// </summary>
-    public void OnPathCountChange() {
+    @Override
+    public void onPathCountChange() {
         if (maskingView.canGoBack()) {
             clearButton.setEnabled(true);
         } else {
@@ -180,7 +180,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         }
     }
 
-    private void RotateMaskingView() {
+    private void rotateMaskingView() {
         new AsyncTask<String, Integer, Boolean>() {
             List<Path> tempPath;
             float scale;
@@ -239,7 +239,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         }.execute();
     }
 
-    private void SaveBitmapToFile() {
+    private void saveBitmapToFile() {
         new AsyncTask<String, Integer, Boolean>() {
             @Override
             protected void onPreExecute() {
@@ -252,7 +252,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
             @Override
             protected Boolean doInBackground(String... params) {
                 try {
-                    SaveToFile();
+                    saveToFile();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -271,7 +271,7 @@ public class MaskingActivity extends Activity implements View.OnClickListener, M
         }.execute();
     }
 
-    private void SaveToFile() throws Exception {
+    private void saveToFile() throws Exception {
         bitmap = maskingView.getViewBitmap();
 
         if (bitmap == null) {

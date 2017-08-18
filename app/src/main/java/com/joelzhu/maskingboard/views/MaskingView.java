@@ -191,7 +191,7 @@ public class MaskingView extends AppCompatImageView {
             }
             if (listener != null) {
                 // 通知监听者涂鸦线数量变化
-                listener.OnPathCountChange();
+                listener.onPathCountChange();
             }
 
             return super.onTouchEvent(e);
@@ -324,7 +324,7 @@ public class MaskingView extends AppCompatImageView {
             invalidate();
             if (listener != null) {
                 // notify listener that paths sum has changed
-                listener.OnPathCountChange();
+                listener.onPathCountChange();
             }
         }
     }
@@ -617,6 +617,6 @@ public class MaskingView extends AppCompatImageView {
      * 涂鸦线数量变化监听器
      */
     public interface OnPathCountChangeListener {
-        void OnPathCountChange();
+        void onPathCountChange();
     }
 }

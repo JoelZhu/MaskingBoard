@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">涂鸦板</string>
+    <string name="title_camera">相机</string>
+    <string name="title_masking">涂鸦</string>
+
     <string name="kenshin_title">健康診断記録</string>
     <string name="kenshin_delete_button_normal">写真を削除</string>
     <string name="kenshin_delete_button_delete">完了</string>
