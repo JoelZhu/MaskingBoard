@@ -31,11 +31,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/textBg"
-                android:drawableTop="@drawable/return_icon_selector"
                 android:gravity="bottom|center"
                 android:text="回退"
                 android:textColor="@drawable/masking_left_text_selector"
-                android:textSize="10dp" />
+                android:textSize="10dp"/>
 
             <Button
                 android:id="@+id/masking_rotate"
@@ -44,11 +43,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/textBg"
-                android:drawableTop="@drawable/rotation_icon_selector"
                 android:gravity="bottom|center"
                 android:text="右转90度"
                 android:textColor="@drawable/masking_left_text_selector"
-                android:textSize="10dp" />
+                android:textSize="10dp"/>
 
             <Button
                 android:id="@+id/masking_masking"
@@ -57,24 +55,22 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/textBg"
-                android:drawableTop="@drawable/fill_icon_selector"
                 android:gravity="bottom|center"
                 android:text="涂鸦"
                 android:textColor="@drawable/masking_right_text_selector"
-                android:textSize="10dp" />
+                android:textSize="10dp"/>
 
             <Button
-                android:id="@+id/masking_draft"
+                android:id="@+id/masking_drag"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/textBg"
-                android:drawableTop="@drawable/zoom_icon_selector"
                 android:gravity="bottom|center"
                 android:text="移动／缩放"
                 android:textColor="@drawable/masking_right_text_selector"
-                android:textSize="10dp" />
+                android:textSize="10dp"/>
         </LinearLayout>
 
         <Button
@@ -89,7 +85,7 @@
             android:gravity="center"
             android:text="完成"
             android:textColor="@color/textBg"
-            android:textSize="17sp" />
+            android:textSize="17sp"/>
     </LinearLayout>
 
     <FrameLayout
@@ -103,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#464646"
-            android:scaleType="matrix" />
+            android:scaleType="matrix"/>
 
         <TextView
             android:id="@+id/masking_maskingHint"
@@ -114,6 +110,6 @@
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
             android:text="@string/kenshin_masking_hint"
-            android:textColor="@color/textBg" />
+            android:textColor="@color/textBg"/>
     </FrameLayout>
 </RelativeLayout>

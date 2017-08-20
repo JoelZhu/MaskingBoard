@@ -3,19 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/textBg"
-    android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <Button
-        android:id="@+id/Main_FromCamera"
+        android:id="@+id/main_fromCamera"
         android:layout_width="250dp"
         android:layout_height="48dp"
-        android:text="From Camera" />
+        android:text="From Camera"/>
 
     <Button
-        android:id="@+id/Main_FromGallery"
+        android:id="@+id/main_fromGallery"
         android:layout_width="250dp"
         android:layout_height="48dp"
         android:layout_marginTop="48dp"
-        android:text="From Gallery" />
+        android:text="From Gallery"/>
 </LinearLayout>

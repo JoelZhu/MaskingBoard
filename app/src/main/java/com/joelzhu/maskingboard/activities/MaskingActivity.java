@@ -1,14 +1,18 @@
 package com.joelzhu.maskingboard.activities;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +21,7 @@ import android.widget.ProgressBar;
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
+import com.joelzhu.maskingboard.utils.DisplayUtils;
 import com.joelzhu.maskingboard.utils.FileUtils;
 import com.joelzhu.maskingboard.views.MaskingView;
 
@@ -25,16 +30,24 @@ import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
 
-public class MaskingActivity extends BaseActivity implements View.OnClickListener, MaskingView.OnPathCountChangeListener {
+public class MaskingActivity extends BaseActivity implements View.OnClickListener, MaskingView
+        .OnPathCountChangeListener {
+    // 原图最大长宽
     private final static int ORIGIN_MAX = 2000;
+    // 按钮图标长宽(单位：dp)
+    private final static int BUTTON_ICON_WIDTH = 39;
+    private final static int BUTTON_ICON_HEIGHT = 30;
 
     private MaskingView maskingView;
     private Bitmap bitmap;
     private ProgressBar progressBar;
 
+    private Uri uri;
+
     private boolean isProcessing = false;
 
-    private Button clearButton, maskingButton, draftButton;
+    // 按钮
+    private Button goBackButton, maskingButton, dragButton;
 
     @Override
     protected LayoutAttrs setLayoutAttributes() {
@@ -49,19 +62,20 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initWidgetOnTheScreen();
+        // 初始化控件
+        initWidget();
 
-        Uri uri = Uri.parse(getIntent().getStringExtra(Consts.ExtraPictureUri));
+        uri = Uri.parse(getIntent().getStringExtra(Consts.ExtraPictureUri));
         int rotateDegree = getIntent().getIntExtra(Consts.ExtraRotateDegree, 90);
 
-//        if (!"content".equals(uri.getScheme()))
-//        {
+        //        if (!"content".equals(uri.getScheme()))
+        //        {
         bitmap = BitmapFactory.decodeFile(uri.getPath());
-//        }
-//        else
-//        {
-//            bitmap = BitmapFactory.decodeFile(FileUtil.GetPath(this, uri));
-//        }
+        //        }
+        //        else
+        //        {
+        //            bitmap = BitmapFactory.decodeFile(FileUtil.GetPath(this, uri));
+        //        }
 
         if (bitmap != null) {
             Matrix matrix = new Matrix();
@@ -114,58 +128,83 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
-        // if we're saving or rotating bitmap, do nothing when user click any button on the screen
+        // 如果现在系统正在处理中，忽略点击事件
         if (isProcessing) {
             return;
         }
 
         switch (view.getId()) {
-            // remove last path
+            // 回退
             case R.id.masking_goBack:
                 maskingView.goBack();
                 break;
 
-            // select masking mode
+            // 涂鸦
             case R.id.masking_masking:
                 maskingView.setMaskingMode(true);
                 maskingButton.setSelected(true);
-                draftButton.setSelected(false);
+                dragButton.setSelected(false);
                 break;
 
-            // select drafting mode
-            case R.id.masking_draft:
+            // 拖拽
+            case R.id.masking_drag:
                 maskingView.setMaskingMode(false);
                 maskingButton.setSelected(false);
-                draftButton.setSelected(true);
+                dragButton.setSelected(true);
                 break;
 
-            // rotate view
+            // 旋转
             case R.id.masking_rotate:
                 rotateMaskingView();
                 break;
 
-            // save bitmap
+            // 保存
             case R.id.masking_finish:
                 saveBitmapToFile();
                 break;
         }
     }
 
-    private void initWidgetOnTheScreen() {
+    /**
+     * 初始化控件
+     */
+    private void initWidget() {
         maskingView = (MaskingView) findViewById(R.id.masking_maskingView);
         progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
 
-        clearButton = (Button) findViewById(R.id.masking_goBack);
+        goBackButton = (Button) findViewById(R.id.masking_goBack);
         maskingButton = (Button) findViewById(R.id.masking_masking);
-        draftButton = (Button) findViewById(R.id.masking_draft);
-        clearButton.setOnClickListener(this);
-        maskingButton.setOnClickListener(this);
-        draftButton.setOnClickListener(this);
-        findViewById(R.id.masking_finish).setOnClickListener(this);
-        findViewById(R.id.masking_rotate).setOnClickListener(this);
+        dragButton = (Button) findViewById(R.id.masking_drag);
+        Button rotateButton = (Button) findViewById(R.id.masking_rotate);
 
-        clearButton.setEnabled(false);
-        draftButton.setSelected(true);
+        // 计算按钮图标的长宽
+        final int iconWidth = DisplayUtils.dp2Px(this, BUTTON_ICON_WIDTH);
+        final int iconHeight = DisplayUtils.dp2Px(this, BUTTON_ICON_HEIGHT);
+        // 设置回退按钮图标大小
+        Drawable goBackDrawable = getResources().getDrawable(R.drawable.back_icon_selector);
+        goBackDrawable.setBounds(0, 0, iconWidth, iconHeight);
+        goBackButton.setCompoundDrawables(null, goBackDrawable, null, null);
+        // 设置涂鸦按钮图标大小
+        Drawable maskingDrawable = getResources().getDrawable(R.drawable.masking_icon_selector);
+        maskingDrawable.setBounds(0, 0, iconWidth, iconHeight);
+        maskingButton.setCompoundDrawables(null, maskingDrawable, null, null);
+        // 设置拖拽按钮图标大小
+        Drawable dragDrawable = getResources().getDrawable(R.drawable.drag_icon_selector);
+        dragDrawable.setBounds(0, 0, iconWidth, iconHeight);
+        dragButton.setCompoundDrawables(null, dragDrawable, null, null);
+        // 设置旋转按钮图标大小
+        Drawable rotateDrawable = getResources().getDrawable(R.drawable.rotate_icon_selector);
+        rotateDrawable.setBounds(0, 0, iconWidth, iconHeight);
+        rotateButton.setCompoundDrawables(null, rotateDrawable, null, null);
+
+        goBackButton.setOnClickListener(this);
+        maskingButton.setOnClickListener(this);
+        dragButton.setOnClickListener(this);
+        rotateButton.setOnClickListener(this);
+        findViewById(R.id.masking_finish).setOnClickListener(this);
+
+        goBackButton.setEnabled(false);
+        dragButton.setSelected(true);
 
         maskingView.setOnPathCountChangeListener(this);
         maskingView.setMaskingMode(false);
@@ -174,12 +213,15 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onPathCountChange() {
         if (maskingView.canGoBack()) {
-            clearButton.setEnabled(true);
+            goBackButton.setEnabled(true);
         } else {
-            clearButton.setEnabled(false);
+            goBackButton.setEnabled(false);
         }
     }
 
+    /**
+     * 旋转
+     */
     private void rotateMaskingView() {
         new AsyncTask<String, Integer, Boolean>() {
             List<Path> tempPath;
@@ -199,7 +241,6 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
             @Override
             protected Boolean doInBackground(String... params) {
-                // rotate the bitmap get from imageview
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
                 if (tempBitmap != null && !tempBitmap.isRecycled()) {
@@ -279,11 +320,14 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         }
 
         // 生成输出流
+        File deleteFile = new File(FileUtils.getFilePathFromUri(this, uri));
+        if (deleteFile.exists())
+            deleteFile.delete();
+
         File file = new File(FileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
         // 文件如果不存在，创建文件
-        if (!file.exists()) {
+        if (!file.exists())
             file.getParentFile().mkdirs();
-        }
 
         FileOutputStream out = new FileOutputStream(file);
         // 将Bitmap绘制到文件中

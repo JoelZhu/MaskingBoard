@@ -34,14 +34,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class CameraActivity extends BaseActivity implements Camera.PictureCallback, TextureView.SurfaceTextureListener, SensorEventListener {
+public class CameraActivity extends BaseActivity implements Camera.PictureCallback, TextureView.SurfaceTextureListener,
+        SensorEventListener {
     private final static int CAMERA_PERMISSION_REQUEST = 1;
     private final static int ORIGIN_MAX = 2000;
 
     private RoundButton takePicture;
 
     private int previewWidth, previewHeight, textureWidth, textureHeight;
-    private float rate = 1;
     private int cameraOri;
 
     private float gravityX, gravityY;
@@ -87,10 +87,11 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
 
         takePicture.setEnabled(true);
 
-//        StartAutoFocus();
+        //        StartAutoFocus();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager
+                .SENSOR_DELAY_UI);
     }
 
     @Override
@@ -155,9 +156,11 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
                         if (destWidth > ORIGIN_MAX || destHeight > ORIGIN_MAX) {
                             if (destWidth > destHeight) {
                                 destWidth = ORIGIN_MAX;
-                                destHeight = (int) (((float) ORIGIN_MAX / tempBitmap.getWidth()) * tempBitmap.getHeight());
+                                destHeight = (int) (((float) ORIGIN_MAX / tempBitmap.getWidth()) * tempBitmap
+                                        .getHeight());
                             } else {
-                                destWidth = (int) (((float) ORIGIN_MAX / tempBitmap.getHeight()) * tempBitmap.getWidth());
+                                destWidth = (int) (((float) ORIGIN_MAX / tempBitmap.getHeight()) * tempBitmap
+                                        .getWidth());
                                 destHeight = ORIGIN_MAX;
                             }
                         }
@@ -237,7 +240,8 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
+            grantResults) {
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             //if (!DeviceUtil.IsGrantedCameraPermission(this))
             //{
@@ -265,12 +269,13 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         //		return;
         //	}
 
-        //	ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.Camera }, CAMERA_PERMISSION_REQUEST);
+        //	ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.Camera },
+        // CAMERA_PERMISSION_REQUEST);
         //}
         //else
         //{
         if (Camera.getNumberOfCameras() == 0) {
-//            System.Diagnostics.Debug.WriteLine("Cemera not supported.");
+            //            System.Diagnostics.Debug.WriteLine("Cemera not supported.");
             return;
         }
         if (camera == null) {
@@ -299,7 +304,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
             Collections.sort(previewSizes, new Comparator<Camera.Size>() {
                 @Override
                 public int compare(Camera.Size o1, Camera.Size o2) {
-                    return Integer.compare(o1.height * o1.width, o2.height * o2.width);
+                    return Integer.compare(o2.height * o2.width, o1.height * o1.width);
                 }
             });
             Camera.Size maxSize = previewSizes.get(0);
@@ -321,21 +326,21 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
                 previewWidth = maxSize.width;
                 previewHeight = maxSize.height;
 
-                float matchestWidth, matchestHeight;
-
+                float exceptWidth, exceptHeight, rate;
                 if ((float) maxSize.height / textureView.getWidth() > (float) maxSize.width / textureView.getHeight()) {
-                    matchestHeight = textureView.getHeight();
+                    exceptHeight = textureView.getHeight();
                     rate = (float) textureView.getHeight() / maxSize.width;
-                    matchestWidth = rate * maxSize.height;
+                    exceptWidth = rate * maxSize.height;
                 } else {
-                    matchestWidth = textureView.getWidth();
+                    exceptWidth = textureView.getWidth();
                     rate = (float) textureView.getWidth() / maxSize.height;
-                    matchestHeight = rate * maxSize.width;
+                    exceptHeight = rate * maxSize.width;
                 }
 
                 param.setPreviewSize(previewWidth, previewHeight);
                 camera.setParameters(param);
-                textureView.setLayoutParams(new FrameLayout.LayoutParams((int) matchestWidth, (int) matchestHeight, Gravity.CENTER));
+                textureView.setLayoutParams(new FrameLayout.LayoutParams((int) exceptWidth, (int) exceptHeight,
+                        Gravity.CENTER));
             }
         }
 
@@ -346,7 +351,8 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
                 return Integer.compare(o1.height * o1.width, o2.height * o2.width);
             }
         });
-        param.setPictureSize(pictureSizes.get(pictureSizes.size() - 1).width, pictureSizes.get(pictureSizes.size() - 1).height);
+        param.setPictureSize(pictureSizes.get(pictureSizes.size() - 1).width, pictureSizes.get(pictureSizes.size() -
+                1).height);
         for (Camera.Size size : pictureSizes) {
             if (size.width > ORIGIN_MAX && size.height > ORIGIN_MAX) {
                 param.setPictureSize(size.width, size.height);
@@ -360,7 +366,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
             camera.setPreviewTexture(surface);
             camera.startPreview();
         } catch (IOException ex) {
-//            Console.WriteLine(ex.Message);
+            //            Console.WriteLine(ex.Message);
         }
         //}
     }

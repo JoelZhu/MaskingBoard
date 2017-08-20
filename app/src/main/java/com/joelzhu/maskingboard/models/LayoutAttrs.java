@@ -34,7 +34,7 @@ public class LayoutAttrs {
     }
 
     public static class Builder {
-        private LayoutAttrs attrs;
+        private LayoutAttrs attrs = new LayoutAttrs();
 
         public Builder layout(int layoutId) {
             attrs.layoutId = layoutId;

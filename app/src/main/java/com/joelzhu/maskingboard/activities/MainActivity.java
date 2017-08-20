@@ -1,8 +1,6 @@
 package com.joelzhu.maskingboard.activities;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -10,6 +8,7 @@ import android.view.View;
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
+import com.joelzhu.maskingboard.utils.FileUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private final static int GALLERY_REQUEST_CODE = 101;
@@ -27,20 +26,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        findViewById(R.id.Main_FromCamera).setOnClickListener(this);
-        findViewById(R.id.Main_FromGallery).setOnClickListener(this);
+        findViewById(R.id.main_fromCamera).setOnClickListener(this);
+        findViewById(R.id.main_fromGallery).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         Intent intent;
         switch (v.getId()) {
-            case R.id.Main_FromCamera:
+            case R.id.main_fromCamera:
                 intent = new Intent(this, CameraActivity.class);
                 startActivity(intent);
                 break;
 
-            case R.id.Main_FromGallery:
+            case R.id.main_fromGallery:
                 intent = new Intent(Intent.ACTION_PICK);
                 intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                 startActivityForResult(intent, GALLERY_REQUEST_CODE);
@@ -52,18 +51,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
                 case GALLERY_REQUEST_CODE:
-                    Cursor cursor = getContentResolver().query(data.getData(), null, null, null, null);
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        String imagePath = cursor.getString(cursor.getColumnIndex("_data"));
-                        cursor.close();
-
-                        Intent intent = new Intent(this, MaskingActivity.class);
-                        intent.putExtra(Consts.ExtraPictureUri, imagePath);
-                    }
+                    String filePath = FileUtils.getFilePathFromUri(MainActivity.this, data.getData());
+                    Intent intent = new Intent(this, MaskingActivity.class);
+                    intent.putExtra(Consts.ExtraPictureUri, filePath);
+                    startActivity(intent);
                     break;
             }
         }
