@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MaskingBoard</string>
+    <string name="title_camera">Camera</string>
+    <string name="title_masking">Masking</string>
+
+    <string name="camera_hint">Please photograph your except masking picture</string>
+    <string name="masking_hint">Please masking your personal information:\nName, Address, Phone Number</string>
+</resources>

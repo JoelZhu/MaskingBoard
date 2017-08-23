@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">マスキングボード</string>
+    <string name="title_camera">カメラ</string>
+    <string name="title_masking">マスキング</string>
+
+    <string name="camera_hint">マスキング画面を撮影してください。</string>
+    <string name="masking_hint">氏名、住所、電話番号を\n指でなぞって塗りつぶしてください。</string>
+</resources>

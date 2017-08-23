@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/textBg">
+    android:background="@color/colorWhite">
 
     <LinearLayout
         android:id="@+id/masking_finishLayout"
@@ -30,7 +30,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/textBg"
+                android:background="@color/colorWhite"
                 android:gravity="bottom|center"
                 android:text="回退"
                 android:textColor="@drawable/masking_left_text_selector"
@@ -42,7 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/textBg"
+                android:background="@color/colorWhite"
                 android:gravity="bottom|center"
                 android:text="右转90度"
                 android:textColor="@drawable/masking_left_text_selector"
@@ -54,7 +54,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/textBg"
+                android:background="@color/colorWhite"
                 android:gravity="bottom|center"
                 android:text="涂鸦"
                 android:textColor="@drawable/masking_right_text_selector"
@@ -66,7 +66,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/textBg"
+                android:background="@color/colorWhite"
                 android:gravity="bottom|center"
                 android:text="移动／缩放"
                 android:textColor="@drawable/masking_right_text_selector"
@@ -84,7 +84,7 @@
             android:background="@drawable/button_masking_selector"
             android:gravity="center"
             android:text="完成"
-            android:textColor="@color/textBg"
+            android:textColor="@color/colorWhite"
             android:textSize="17sp"/>
     </LinearLayout>
 
@@ -105,11 +105,11 @@
             android:id="@+id/masking_maskingHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/maskingHint"
+            android:background="@color/colorBlack"
             android:gravity="center"
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
-            android:text="@string/kenshin_masking_hint"
-            android:textColor="@color/textBg"/>
+            android:text="@string/masking_hint"
+            android:textColor="@color/colorWhite"/>
     </FrameLayout>
 </RelativeLayout>

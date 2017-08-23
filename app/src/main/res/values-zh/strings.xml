@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">涂鸦板</string>
+    <string name="title_camera">相机</string>
+    <string name="title_masking">涂鸦</string>
+
+    <string name="camera_hint">拍摄想要进行涂鸦的画面</string>
+    <string name="masking_hint">请注意涂抹姓名、住址、电话等个人信息</string>
+</resources>
