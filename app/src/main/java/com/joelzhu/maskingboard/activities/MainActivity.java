@@ -10,9 +10,12 @@ import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
 import com.joelzhu.maskingboard.utils.FileUtils;
 
+/**
+ * 主界面
+ *
+ * @author JoelZhu
+ */
 public class MainActivity extends BaseActivity implements View.OnClickListener {
-    private final static int GALLERY_REQUEST_CODE = 101;
-
     @Override
     protected LayoutAttrs setLayoutAttributes() {
         return new LayoutAttrs.Builder()
@@ -26,23 +29,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 添加按钮点击事件
         findViewById(R.id.main_fromCamera).setOnClickListener(this);
         findViewById(R.id.main_fromGallery).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        Intent intent;
         switch (v.getId()) {
             case R.id.main_fromCamera:
-                intent = new Intent(this, CameraActivity.class);
-                startActivity(intent);
+                // 相机
+                Intent cameraIntent = new Intent(this, CameraActivity.class);
+                startActivity(cameraIntent);
                 break;
 
             case R.id.main_fromGallery:
-                intent = new Intent(Intent.ACTION_PICK);
-                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(intent, GALLERY_REQUEST_CODE);
+                // 相册
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+                galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(galleryIntent, Consts.GALLERY_REQUEST_CODE);
                 break;
         }
     }
@@ -53,7 +58,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
-                case GALLERY_REQUEST_CODE:
+                case Consts.GALLERY_REQUEST_CODE:
+                    // 相册
                     String filePath = FileUtils.getFilePathFromUri(MainActivity.this, data.getData());
                     Intent intent = new Intent(this, MaskingActivity.class);
                     intent.putExtra(Consts.ExtraPictureUri, filePath);

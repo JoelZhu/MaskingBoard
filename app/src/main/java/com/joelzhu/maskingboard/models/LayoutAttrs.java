@@ -16,7 +16,7 @@ public class LayoutAttrs {
     private int titleId;
 
     /**
-     * 私有构造函数
+     * 私有无参构造函数
      */
     private LayoutAttrs() {
     }

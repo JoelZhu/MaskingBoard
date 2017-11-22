@@ -1,16 +1,11 @@
 package com.joelzhu.maskingboard.activities;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
@@ -22,35 +17,47 @@ import android.widget.ProgressBar;
 
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
+import com.joelzhu.maskingboard.tasks.PictureTakenAsyncTask;
 import com.joelzhu.maskingboard.utils.Consts;
-import com.joelzhu.maskingboard.utils.FileUtils;
 import com.joelzhu.maskingboard.views.RoundButton;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
+/**
+ * 相机页面
+ *
+ * @author JoelZhu
+ */
 public class CameraActivity extends BaseActivity implements Camera.PictureCallback, TextureView.SurfaceTextureListener,
         SensorEventListener {
-    private final static int CAMERA_PERMISSION_REQUEST = 1;
-    private final static int ORIGIN_MAX = 2000;
-
+    // 拍照按钮
     private RoundButton takePicture;
 
+    // 相机预览尺寸和控件尺寸的长宽
     private int previewWidth, previewHeight, textureWidth, textureHeight;
+
+    // 相机的角度
     private int cameraOri;
 
+    // 手机X轴和Y轴的重力加速度
     private float gravityX, gravityY;
 
+    // 传感器帮助类
     private SensorManager sensorManager;
+
+    // 相机对象
     private Camera camera;
+
+    // 预览控件
     private TextureView textureView;
+
+    // 等待框
     private ProgressBar progressBar;
 
+    // 是否是从其他Activity回退回来
     private boolean isFirst = true;
 
     @Override
@@ -66,7 +73,9 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 获取拍照按钮控件
         takePicture = (RoundButton) findViewById(R.id.camera_takePicture);
+        // 添加点击事件
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,9 +84,11 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
             }
         });
 
+        // 获取预览控件
         textureView = (TextureView) findViewById(R.id.camera_texture);
         textureView.setSurfaceTextureListener(this);
 
+        // 等待框
         progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
     }
 
@@ -85,29 +96,39 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
     protected void onResume() {
         super.onResume();
 
+        // 拍照按钮可用
         takePicture.setEnabled(true);
 
         //        StartAutoFocus();
 
+        // 添加重力加速度传感器
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager
-                .SENSOR_DELAY_UI);
+        if (sensorManager != null)
+            // 如果传感器不为空，注册传感器
+            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
+        // 注销重力加速度传感器
         sensorManager.unregisterListener(this);
     }
 
     @Override
     public void onPictureTaken(final byte[] data, Camera camera) {
+        // 显示等待框
         progressBar.setVisibility(View.VISIBLE);
 
         if (camera != null) {
+            // 停止预览
             camera.stopPreview();
+            // 注销重力加速度传感器
+            sensorManager.unregisterListener(this);
 
+            // 计算手机重力加速度，用于判断照片方向
             int ori = cameraOri;
             if (Math.abs(gravityX) > Math.abs(gravityY)) {
                 if (gravityX > 0) {
@@ -122,81 +143,8 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
                 }
             }
 
-            // 启动线程保存拍摄图片
-            new AsyncTask<Integer, Integer, Uri>() {
-                int ori;
-
-                @Override
-                protected Uri doInBackground(Integer... params) {
-                    ori = params[0];
-
-                    // 生成输出流
-                    File file = new File(FileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
-                    // 文件如果不存在，创建文件
-                    if (!file.exists()) {
-                        file.getParentFile().mkdirs();
-                    }
-
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    float widthRate = (float) bitmap.getWidth() / textureHeight;
-                    float heightRate = (float) bitmap.getHeight() / textureWidth;
-                    float bitmapRate = widthRate < heightRate ? widthRate : heightRate;
-
-                    Bitmap tempBitmap = Bitmap.createBitmap(bitmap,
-                            (int) ((bitmap.getWidth() - textureHeight * bitmapRate) / 2),
-                            (int) ((bitmap.getHeight() - textureWidth * bitmapRate) / 2),
-                            (int) (textureHeight * bitmapRate),
-                            (int) (textureWidth * bitmapRate));
-
-                    // 控制图片的大小
-                    int destWidth, destHeight;
-                    if (tempBitmap != null) {
-                        destWidth = tempBitmap.getWidth();
-                        destHeight = tempBitmap.getHeight();
-                        if (destWidth > ORIGIN_MAX || destHeight > ORIGIN_MAX) {
-                            if (destWidth > destHeight) {
-                                destWidth = ORIGIN_MAX;
-                                destHeight = (int) (((float) ORIGIN_MAX / tempBitmap.getWidth()) * tempBitmap
-                                        .getHeight());
-                            } else {
-                                destWidth = (int) (((float) ORIGIN_MAX / tempBitmap.getHeight()) * tempBitmap
-                                        .getWidth());
-                                destHeight = ORIGIN_MAX;
-                            }
-                        }
-
-                        try {
-                            Bitmap destBitmap = Bitmap.createScaledBitmap(tempBitmap, destWidth, destHeight, false);
-
-                            FileOutputStream out = new FileOutputStream(file);
-                            // 将Bitmap绘制到文件中
-                            destBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-                            // 释放Bitmap资源
-                            destBitmap.recycle();
-                            // 关闭流
-                            out.close();
-                        } catch (Exception e) {
-
-                        }
-                    }
-
-                    bitmap.recycle();
-                    bitmap = null;
-
-                    return Uri.fromFile(file);
-                }
-
-                @Override
-                protected void onPostExecute(Uri uri) {
-                    // 跳转涂鸦页面
-                    Intent intent = new Intent(CameraActivity.this, MaskingActivity.class);
-                    intent.putExtra(Consts.ExtraPictureUri, uri.toString());
-                    intent.putExtra(Consts.ExtraRotateDegree, ori);
-                    startActivity(intent);
-
-                    progressBar.setVisibility(View.GONE);
-                }
-            }.execute(ori);
+            // 处理拍摄的图片
+            new PictureTakenAsyncTask(this, progressBar, data, textureWidth, textureHeight).execute(ori);
         }
     }
 
@@ -208,6 +156,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
     @Override
     public void onSensorChanged(SensorEvent e) {
         if (e.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // 通过回调不断修正传感器的值
             gravityX = e.values[0];
             gravityY = e.values[1];
         }
@@ -215,12 +164,14 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        // 初始化相机
         initCamera(surface);
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         if (camera != null) {
+            // 销毁相机
             camera.stopPreview();
             camera.release();
             camera = null;
@@ -242,7 +193,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
             grantResults) {
-        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+        if (requestCode == Consts.CAMERA_PERMISSION_REQUEST) {
             //if (!DeviceUtil.IsGrantedCameraPermission(this))
             //{
             //	var intent = new Intent(this, typeof(CaradaWebViewActivity));
@@ -259,6 +210,11 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         }
     }
 
+    /**
+     * 初始化相机
+     *
+     * @param surface
+     */
     private void initCamera(SurfaceTexture surface) {
         // TODO deal with permission
         //if (!DeviceUtil.IsGrantedCameraPermission(this))
@@ -354,7 +310,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         param.setPictureSize(pictureSizes.get(pictureSizes.size() - 1).width, pictureSizes.get(pictureSizes.size() -
                 1).height);
         for (Camera.Size size : pictureSizes) {
-            if (size.width > ORIGIN_MAX && size.height > ORIGIN_MAX) {
+            if (size.width > Consts.ORIGIN_MAX && size.height > Consts.ORIGIN_MAX) {
                 param.setPictureSize(size.width, size.height);
                 break;
             }
@@ -371,11 +327,16 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         //}
     }
 
+    /**
+     * 设置相机展示方向
+     *
+     * @param cameraId
+     */
     private void setCameraDisplayOrientation(int cameraId) {
         // 获取相机信息对象
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, cameraInfo);
-        // ディスプレイの向き取得
+
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
@@ -392,26 +353,25 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
                 degrees = 270;
                 break;
         }
-        // プレビューの向き計算
+
         if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             cameraOri = (cameraInfo.orientation + degrees) % 360;
-            cameraOri = (360 - cameraOri) % 360; // compensate the mirror
-        } else { // back-facing
+            cameraOri = (360 - cameraOri) % 360;
+        } else {
             cameraOri = (cameraInfo.orientation - degrees + 360) % 360;
         }
-        // ディスプレイの向き設定
+
         camera.setDisplayOrientation(cameraOri);
     }
 
-    /// <summary>
-    /// プレビューのぼやけを解消する
-    /// </summary>
+    /**
+     * 设置相机自动对焦
+     */
     private void setCamFocusMode() {
         if (null == camera) {
             return;
         }
 
-        // Set Auto focus
         Camera.Parameters parameters = camera.getParameters();
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 

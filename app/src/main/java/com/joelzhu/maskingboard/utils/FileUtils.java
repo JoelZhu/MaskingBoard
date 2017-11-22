@@ -9,6 +9,11 @@ import android.provider.MediaStore;
 
 import java.io.File;
 
+/**
+ * 文件处理工具类
+ *
+ * @author JoelZhu
+ */
 public final class FileUtils {
     /**
      * 文件根目录

@@ -14,6 +14,11 @@ import android.widget.FrameLayout;
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 
+/**
+ * Activity父类
+ *
+ * @author JoelZhu
+ */
 public abstract class BaseActivity extends Activity {
     // 设置页面属性
     protected abstract LayoutAttrs setLayoutAttributes();
