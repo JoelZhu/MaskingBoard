@@ -1,8 +1,6 @@
 package com.joelzhu.maskingboard.activities;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -12,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,14 +20,14 @@ import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
 import com.joelzhu.maskingboard.utils.DisplayUtils;
 import com.joelzhu.maskingboard.utils.FileUtils;
-import com.joelzhu.maskingboard.views.MaskingView;
+import com.joelzhu.maskingboard.views.JZMaskingView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
 
-public class MaskingActivity extends BaseActivity implements View.OnClickListener, MaskingView
+public class MaskingActivity extends BaseActivity implements View.OnClickListener, JZMaskingView
         .OnPathCountChangeListener {
     // 原图最大长宽
     private final static int ORIGIN_MAX = 2000;
@@ -38,7 +35,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     private final static int BUTTON_ICON_WIDTH = 39;
     private final static int BUTTON_ICON_HEIGHT = 30;
 
-    private MaskingView maskingView;
+    private JZMaskingView JZMaskingView;
     private Bitmap bitmap;
     private ProgressBar progressBar;
 
@@ -103,7 +100,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
             }
 
             destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
-            maskingView.setImageBitmap(destBitmap);
+            JZMaskingView.setImageBitmap(destBitmap);
         } else {
             Log.d(Consts.LogTag, "Masking OnCreate bitmap is null");
         }
@@ -113,7 +110,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         maskingHint.measure(w, h);
         int height = maskingHint.getMeasuredHeight();
-        maskingView.setOffsetHeight(height);
+        JZMaskingView.setOffsetHeight(height);
     }
 
     @Override
@@ -136,19 +133,19 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         switch (view.getId()) {
             // 回退
             case R.id.masking_goBack:
-                maskingView.goBack();
+                JZMaskingView.goBack();
                 break;
 
             // 涂鸦
             case R.id.masking_masking:
-                maskingView.setMaskingMode(true);
+                JZMaskingView.setMaskingMode(true);
                 maskingButton.setSelected(true);
                 dragButton.setSelected(false);
                 break;
 
             // 拖拽
             case R.id.masking_drag:
-                maskingView.setMaskingMode(false);
+                JZMaskingView.setMaskingMode(false);
                 maskingButton.setSelected(false);
                 dragButton.setSelected(true);
                 break;
@@ -169,7 +166,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
      * 初始化控件
      */
     private void initWidget() {
-        maskingView = (MaskingView) findViewById(R.id.masking_maskingView);
+        JZMaskingView = (JZMaskingView) findViewById(R.id.masking_maskingView);
         progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
 
         goBackButton = (Button) findViewById(R.id.masking_goBack);
@@ -206,13 +203,13 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         goBackButton.setEnabled(false);
         dragButton.setSelected(true);
 
-        maskingView.setOnPathCountChangeListener(this);
-        maskingView.setMaskingMode(false);
+        JZMaskingView.setOnPathCountChangeListener(this);
+        JZMaskingView.setMaskingMode(false);
     }
 
     @Override
     public void onPathCountChange() {
-        if (maskingView.canGoBack()) {
+        if (JZMaskingView.canGoBack()) {
             goBackButton.setEnabled(true);
         } else {
             goBackButton.setEnabled(false);
@@ -232,11 +229,11 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
             protected void onPreExecute() {
                 isProcessing = true;
 
-                tempPath = maskingView.getAndRemoveAllPath();
-                scale = maskingView.getImageViewScale();
-                maskingView.resetMatrix();
+                tempPath = JZMaskingView.getAndRemoveAllPath();
+                scale = JZMaskingView.getImageViewScale();
+                JZMaskingView.resetMatrix();
                 progressBar.setVisibility(View.VISIBLE);
-                tempBitmap = maskingView.getImageBitmap();
+                tempBitmap = JZMaskingView.getImageBitmap();
             }
 
             @Override
@@ -252,7 +249,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                BitmapDrawable drawable = (BitmapDrawable) maskingView.getDrawable();
+                                BitmapDrawable drawable = (BitmapDrawable) JZMaskingView.getDrawable();
                                 if (drawable != null) {
                                     Bitmap temp = drawable.getBitmap();
                                     if (temp != null) {
@@ -260,8 +257,8 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
                                         temp = null;
                                     }
                                 }
-                                maskingView.setImageBitmap(destBitmap);
-                                maskingView.rotatePaths(tempPath, scale);
+                                JZMaskingView.setImageBitmap(destBitmap);
+                                JZMaskingView.rotatePaths(tempPath, scale);
                             }
                         });
                     }
@@ -284,7 +281,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         new AsyncTask<String, Integer, Boolean>() {
             @Override
             protected void onPreExecute() {
-                maskingView.resetMatrix();
+                JZMaskingView.resetMatrix();
 
                 progressBar.setVisibility(View.VISIBLE);
                 isProcessing = true;
@@ -313,7 +310,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void saveToFile() throws Exception {
-        bitmap = maskingView.getViewBitmap();
+        bitmap = JZMaskingView.getViewBitmap();
 
         if (bitmap == null) {
             Log.d(Consts.LogTag, "Masking GetFile bitmap is null");

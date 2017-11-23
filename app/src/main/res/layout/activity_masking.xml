@@ -94,7 +94,7 @@
         android:layout_above="@id/masking_finishLayout"
         android:layout_below="@id/masking_buttonLayout">
 
-        <com.joelzhu.maskingboard.views.MaskingView
+        <com.joelzhu.maskingboard.views.JZMaskingView
             android:id="@+id/masking_maskingView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

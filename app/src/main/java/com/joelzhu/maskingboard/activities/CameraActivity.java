@@ -19,7 +19,7 @@ import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.tasks.PictureTakenAsyncTask;
 import com.joelzhu.maskingboard.utils.Consts;
-import com.joelzhu.maskingboard.views.RoundButton;
+import com.joelzhu.maskingboard.views.JZRoundButton;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import java.util.List;
 public class CameraActivity extends BaseActivity implements Camera.PictureCallback, TextureView.SurfaceTextureListener,
         SensorEventListener {
     // 拍照按钮
-    private RoundButton takePicture;
+    private JZRoundButton takePicture;
 
     // 相机预览尺寸和控件尺寸的长宽
     private int previewWidth, previewHeight, textureWidth, textureHeight;
@@ -74,7 +74,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         super.onCreate(savedInstanceState);
 
         // 获取拍照按钮控件
-        takePicture = (RoundButton) findViewById(R.id.camera_takePicture);
+        takePicture = (JZRoundButton) findViewById(R.id.camera_takePicture);
         // 添加点击事件
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override

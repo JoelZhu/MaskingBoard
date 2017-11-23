@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.joelzhu.maskingboard.utils.DisplayUtils;
@@ -14,7 +15,7 @@ import com.joelzhu.maskingboard.utils.DisplayUtils;
  *
  * @author JoelZhu
  */
-public class RoundButton extends View {
+public class JZRoundButton extends View {
     // 画笔对象
     private Paint paint;
 
@@ -26,7 +27,7 @@ public class RoundButton extends View {
      *
      * @param context 上下文对象
      */
-    public RoundButton(Context context) {
+    public JZRoundButton(Context context) {
         super(context);
 
         // 初始化控件
@@ -39,7 +40,7 @@ public class RoundButton extends View {
      * @param context 上下文对象
      * @param attrs   属性对象
      */
-    public RoundButton(Context context, AttributeSet attrs) {
+    public JZRoundButton(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // 初始化控件
@@ -53,7 +54,7 @@ public class RoundButton extends View {
      * @param attrs        属性对象
      * @param defStyleAttr 样式
      */
-    public RoundButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public JZRoundButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         // 初始化控件

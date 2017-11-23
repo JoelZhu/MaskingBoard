@@ -14,7 +14,7 @@
         android:paddingLeft="14dp"
         android:paddingRight="14dp">
 
-        <com.joelzhu.maskingboard.views.RoundButton
+        <com.joelzhu.maskingboard.views.JZRoundButton
             android:id="@+id/camera_takePicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

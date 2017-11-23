@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author JoelZhu
  */
-public class MaskingView extends AppCompatImageView {
+public class JZMaskingView extends AppCompatImageView {
     // 控件边框冗余像素常量
     private static final int OFFSET_PADDING = 100;
 
@@ -72,7 +72,7 @@ public class MaskingView extends AppCompatImageView {
      *
      * @param context 上下文对象
      */
-    public MaskingView(Context context) {
+    public JZMaskingView(Context context) {
         super(context);
 
         // 初始化控件
@@ -85,7 +85,7 @@ public class MaskingView extends AppCompatImageView {
      * @param context 上下文对象
      * @param attrs   属性对象
      */
-    public MaskingView(Context context, AttributeSet attrs) {
+    public JZMaskingView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // 初始化控件
@@ -99,7 +99,7 @@ public class MaskingView extends AppCompatImageView {
      * @param attrs        属性对象
      * @param defStyleAttr 样式
      */
-    public MaskingView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public JZMaskingView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         // 初始化控件

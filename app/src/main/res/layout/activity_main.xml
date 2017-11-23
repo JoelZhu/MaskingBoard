@@ -10,6 +10,7 @@
         android:id="@+id/main_fromCamera"
         android:layout_width="250dp"
         android:layout_height="48dp"
+        android:visibility="gone"
         android:text="From Camera"/>
 
     <Button
@@ -17,5 +18,11 @@
         android:layout_width="250dp"
         android:layout_height="48dp"
         android:layout_marginTop="48dp"
+        android:visibility="gone"
         android:text="From Gallery"/>
+
+    <com.joelzhu.maskingboard.views.JZAddButton
+        android:id="@+id/main_addButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

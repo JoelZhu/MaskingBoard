@@ -9,13 +9,14 @@ import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.Consts;
 import com.joelzhu.maskingboard.utils.FileUtils;
+import com.joelzhu.maskingboard.views.JZAddButton;
 
 /**
  * 主界面
  *
  * @author JoelZhu
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements JZAddButton.OnButtonClickListener {
     @Override
     protected LayoutAttrs setLayoutAttributes() {
         return new LayoutAttrs.Builder()
@@ -29,27 +30,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 添加按钮点击事件
-        findViewById(R.id.main_fromCamera).setOnClickListener(this);
-        findViewById(R.id.main_fromGallery).setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.main_fromCamera:
-                // 相机
-                Intent cameraIntent = new Intent(this, CameraActivity.class);
-                startActivity(cameraIntent);
-                break;
-
-            case R.id.main_fromGallery:
-                // 相册
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-                galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(galleryIntent, Consts.GALLERY_REQUEST_CODE);
-                break;
-        }
+        ((JZAddButton)findViewById(R.id.main_addButton)).setOnButtonClickListener(this);
     }
 
     @Override
@@ -67,5 +48,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     break;
             }
         }
+    }
+
+    @Override
+    public void onCameraClick() {
+        Intent cameraIntent = new Intent(this, CameraActivity.class);
+        startActivity(cameraIntent);
+    }
+
+    @Override
+    public void onGalleryClick() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+        galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(galleryIntent, Consts.GALLERY_REQUEST_CODE);
     }
 }

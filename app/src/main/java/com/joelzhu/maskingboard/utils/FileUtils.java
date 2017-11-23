@@ -21,7 +21,8 @@ public final class FileUtils {
      * @return 文件目录
      */
     public static String getFileDir() {
-        return Environment.getExternalStorageDirectory().getPath() + File.separator + "masking";
+        return Environment.getExternalStorageDirectory().getPath() + File.separator + "JoelZhu" +
+                File.separator + "MaskingBoard";
     }
 
     /**
