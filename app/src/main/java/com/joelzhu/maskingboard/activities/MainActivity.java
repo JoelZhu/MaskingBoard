@@ -56,8 +56,10 @@ public class MainActivity extends BaseActivity {
         // 更新文件数组
         uris.clear();
         File file = new File(JZFileUtils.getFileDir());
-        for (File childFile : file.listFiles()) {
-            uris.add(Uri.fromFile(childFile));
+        if (file.exists() && file.listFiles().length > 0) {
+            for (File childFile : file.listFiles()) {
+                uris.add(Uri.fromFile(childFile));
+            }
         }
         // 通知适配器数据修改
         adapter.notifyDataSetChanged();

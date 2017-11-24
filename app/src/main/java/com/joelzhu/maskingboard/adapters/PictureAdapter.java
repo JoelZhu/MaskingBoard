@@ -118,7 +118,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
     @Override
     public void notifyDataSetChanged() {
         // 判断第一个是否是空元素，如果不是，增加空元素
-        if (uris.get(0) != Uri.EMPTY)
+        if (uris.size() == 0 || uris.get(0) != Uri.EMPTY)
             uris.add(0, Uri.EMPTY);
 
         super.notifyDataSetChanged();
