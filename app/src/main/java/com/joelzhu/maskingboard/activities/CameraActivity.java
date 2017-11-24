@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
@@ -18,7 +19,7 @@ import android.widget.ProgressBar;
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.tasks.PictureTakenAsyncTask;
-import com.joelzhu.maskingboard.utils.Consts;
+import com.joelzhu.maskingboard.utils.JZConsts;
 import com.joelzhu.maskingboard.views.JZRoundButton;
 
 import java.io.IOException;
@@ -79,6 +80,11 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(JZConsts.LogTag, "Click button succeeded");
+
+                // 注销重力加速度传感器
+                sensorManager.unregisterListener(CameraActivity.this);
+
                 takePicture.setEnabled(false);
                 camera.takePicture(null, null, CameraActivity.this);
             }
@@ -125,8 +131,6 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         if (camera != null) {
             // 停止预览
             camera.stopPreview();
-            // 注销重力加速度传感器
-            sensorManager.unregisterListener(this);
 
             // 计算手机重力加速度，用于判断照片方向
             int ori = cameraOri;
@@ -193,7 +197,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
             grantResults) {
-        if (requestCode == Consts.CAMERA_PERMISSION_REQUEST) {
+        if (requestCode == JZConsts.CAMERA_PERMISSION_REQUEST) {
             //if (!DeviceUtil.IsGrantedCameraPermission(this))
             //{
             //	var intent = new Intent(this, typeof(CaradaWebViewActivity));
@@ -310,7 +314,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         param.setPictureSize(pictureSizes.get(pictureSizes.size() - 1).width, pictureSizes.get(pictureSizes.size() -
                 1).height);
         for (Camera.Size size : pictureSizes) {
-            if (size.width > Consts.ORIGIN_MAX && size.height > Consts.ORIGIN_MAX) {
+            if (size.width > JZConsts.ORIGIN_MAX && size.height > JZConsts.ORIGIN_MAX) {
                 param.setPictureSize(size.width, size.height);
                 break;
             }

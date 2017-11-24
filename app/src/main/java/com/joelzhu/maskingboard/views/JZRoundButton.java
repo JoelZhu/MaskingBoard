@@ -5,10 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 
-import com.joelzhu.maskingboard.utils.DisplayUtils;
+import com.joelzhu.maskingboard.utils.JZDisplayUtils;
 
 /**
  * 自定义控件 - 圆形按钮
@@ -87,13 +86,13 @@ public class JZRoundButton extends View {
         if (widthMode == MeasureSpec.EXACTLY) {
             width = widthSize;
         } else {
-            width = DisplayUtils.dp2Px(getContext(), 70);
+            width = JZDisplayUtils.dp2Px(getContext(), 70);
         }
 
         if (heightMode == MeasureSpec.EXACTLY) {
             height = heightSize;
         } else {
-            height = DisplayUtils.dp2Px(getContext(), 70);
+            height = JZDisplayUtils.dp2Px(getContext(), 70);
         }
 
         if (width <= height) {
@@ -124,6 +123,6 @@ public class JZRoundButton extends View {
         paint.reset();
         paint.setAntiAlias(true);
         paint.setColor(Color.argb(255, 128, 128, 128));
-        canvas.drawCircle(diameter / 2, diameter / 2, diameter / 2 * 6 / 7 - DisplayUtils.dp2Px(getContext(), 3), paint);
+        canvas.drawCircle(diameter / 2, diameter / 2, diameter / 2 * 6 / 7 - JZDisplayUtils.dp2Px(getContext(), 3), paint);
     }
 }

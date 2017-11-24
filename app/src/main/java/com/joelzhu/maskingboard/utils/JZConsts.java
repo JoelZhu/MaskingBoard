@@ -5,7 +5,7 @@ package com.joelzhu.maskingboard.utils;
  *
  * @author JoelZhu
  */
-public final class Consts {
+public final class JZConsts {
     // Log标签
     public static final String LogTag = "JoelZhu";
 
@@ -16,7 +16,7 @@ public final class Consts {
     public static final int CAMERA_PERMISSION_REQUEST = 1;
 
     // 裁剪图片最大尺寸
-    public static final int ORIGIN_MAX = 2000;
+    public static final int ORIGIN_MAX = 4000;
 
     // Intent参数key值
     public static final String ExtraPictureUri = "ExtraPictureUri";

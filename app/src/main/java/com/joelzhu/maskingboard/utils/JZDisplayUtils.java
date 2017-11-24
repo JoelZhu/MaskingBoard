@@ -7,7 +7,7 @@ import android.content.Context;
  *
  * @author JoelZhu
  */
-public final class DisplayUtils {
+public final class JZDisplayUtils {
     /**
      * DP单位转化为PX
      *

@@ -1,14 +1,10 @@
 package com.joelzhu.maskingboard.activities;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.Path;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,31 +13,25 @@ import android.widget.ProgressBar;
 
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
-import com.joelzhu.maskingboard.utils.Consts;
-import com.joelzhu.maskingboard.utils.DisplayUtils;
-import com.joelzhu.maskingboard.utils.FileUtils;
+import com.joelzhu.maskingboard.tasks.PictureRotateAsyncTask;
+import com.joelzhu.maskingboard.tasks.PictureSaveAsyncTask;
+import com.joelzhu.maskingboard.utils.JZConsts;
+import com.joelzhu.maskingboard.utils.JZDisplayUtils;
 import com.joelzhu.maskingboard.views.JZMaskingView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
-import java.util.List;
 
 public class MaskingActivity extends BaseActivity implements View.OnClickListener, JZMaskingView
         .OnPathCountChangeListener {
-    // 原图最大长宽
-    private final static int ORIGIN_MAX = 2000;
     // 按钮图标长宽(单位：dp)
-    private final static int BUTTON_ICON_WIDTH = 39;
-    private final static int BUTTON_ICON_HEIGHT = 30;
+    private static final int BUTTON_ICON_WIDTH = 39;
+    private static final int BUTTON_ICON_HEIGHT = 30;
 
-    private JZMaskingView JZMaskingView;
+    private JZMaskingView jzMaskingView;
     private Bitmap bitmap;
     private ProgressBar progressBar;
 
     private Uri uri;
 
-    private boolean isProcessing = false;
+    public boolean isProcessing = false;
 
     // 按钮
     private Button goBackButton, maskingButton, dragButton;
@@ -62,8 +52,8 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         // 初始化控件
         initWidget();
 
-        uri = Uri.parse(getIntent().getStringExtra(Consts.ExtraPictureUri));
-        int rotateDegree = getIntent().getIntExtra(Consts.ExtraRotateDegree, 90);
+        uri = Uri.parse(getIntent().getStringExtra(JZConsts.ExtraPictureUri));
+        int rotateDegree = getIntent().getIntExtra(JZConsts.ExtraRotateDegree, 90);
 
         //        if (!"content".equals(uri.getScheme()))
         //        {
@@ -83,26 +73,26 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
             int bitmapWidth = bitmap.getWidth();
             int bitmapHeight = bitmap.getHeight();
             Bitmap destBitmap;
-            if (bitmapWidth > ORIGIN_MAX || bitmapHeight > ORIGIN_MAX) {
+            if (bitmapWidth > JZConsts.ORIGIN_MAX || bitmapHeight > JZConsts.ORIGIN_MAX) {
                 float scale;
 
                 if (bitmapWidth > bitmapHeight) {
-                    scale = (float) ORIGIN_MAX / bitmap.getWidth();
-                    bitmapWidth = ORIGIN_MAX;
+                    scale = (float) JZConsts.ORIGIN_MAX / bitmap.getWidth();
+                    bitmapWidth = JZConsts.ORIGIN_MAX;
                     bitmapHeight = (int) (scale * bitmap.getHeight());
                 } else {
-                    scale = (float) ORIGIN_MAX / bitmap.getHeight();
+                    scale = (float) JZConsts.ORIGIN_MAX / bitmap.getHeight();
                     bitmapWidth = (int) (scale * bitmap.getWidth());
-                    bitmapHeight = ORIGIN_MAX;
+                    bitmapHeight = JZConsts.ORIGIN_MAX;
                 }
 
                 matrix.setScale(scale, scale);
             }
 
             destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
-            JZMaskingView.setImageBitmap(destBitmap);
+            jzMaskingView.setImageBitmap(destBitmap);
         } else {
-            Log.d(Consts.LogTag, "Masking OnCreate bitmap is null");
+            Log.d(JZConsts.LogTag, "Masking OnCreate bitmap is null");
         }
 
         View maskingHint = findViewById(R.id.masking_maskingHint);
@@ -110,7 +100,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         maskingHint.measure(w, h);
         int height = maskingHint.getMeasuredHeight();
-        JZMaskingView.setOffsetHeight(height);
+        jzMaskingView.setOffsetHeight(height);
     }
 
     @Override
@@ -133,31 +123,31 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         switch (view.getId()) {
             // 回退
             case R.id.masking_goBack:
-                JZMaskingView.goBack();
+                jzMaskingView.goBack();
                 break;
 
             // 涂鸦
             case R.id.masking_masking:
-                JZMaskingView.setMaskingMode(true);
+                jzMaskingView.setMaskingMode(true);
                 maskingButton.setSelected(true);
                 dragButton.setSelected(false);
                 break;
 
             // 拖拽
             case R.id.masking_drag:
-                JZMaskingView.setMaskingMode(false);
+                jzMaskingView.setMaskingMode(false);
                 maskingButton.setSelected(false);
                 dragButton.setSelected(true);
                 break;
 
             // 旋转
             case R.id.masking_rotate:
-                rotateMaskingView();
+                new PictureRotateAsyncTask(this, jzMaskingView, progressBar).execute();
                 break;
 
             // 保存
             case R.id.masking_finish:
-                saveBitmapToFile();
+                new PictureSaveAsyncTask(this, jzMaskingView, progressBar).execute(uri);
                 break;
         }
     }
@@ -166,7 +156,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
      * 初始化控件
      */
     private void initWidget() {
-        JZMaskingView = (JZMaskingView) findViewById(R.id.masking_maskingView);
+        jzMaskingView = (JZMaskingView) findViewById(R.id.masking_maskingView);
         progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
 
         goBackButton = (Button) findViewById(R.id.masking_goBack);
@@ -175,8 +165,8 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         Button rotateButton = (Button) findViewById(R.id.masking_rotate);
 
         // 计算按钮图标的长宽
-        final int iconWidth = DisplayUtils.dp2Px(this, BUTTON_ICON_WIDTH);
-        final int iconHeight = DisplayUtils.dp2Px(this, BUTTON_ICON_HEIGHT);
+        final int iconWidth = JZDisplayUtils.dp2Px(this, BUTTON_ICON_WIDTH);
+        final int iconHeight = JZDisplayUtils.dp2Px(this, BUTTON_ICON_HEIGHT);
         // 设置回退按钮图标大小
         Drawable goBackDrawable = getResources().getDrawable(R.drawable.back_icon_selector);
         goBackDrawable.setBounds(0, 0, iconWidth, iconHeight);
@@ -203,135 +193,16 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         goBackButton.setEnabled(false);
         dragButton.setSelected(true);
 
-        JZMaskingView.setOnPathCountChangeListener(this);
-        JZMaskingView.setMaskingMode(false);
+        jzMaskingView.setOnPathCountChangeListener(this);
+        jzMaskingView.setMaskingMode(false);
     }
 
     @Override
     public void onPathCountChange() {
-        if (JZMaskingView.canGoBack()) {
+        if (jzMaskingView.canGoBack()) {
             goBackButton.setEnabled(true);
         } else {
             goBackButton.setEnabled(false);
         }
-    }
-
-    /**
-     * 旋转
-     */
-    private void rotateMaskingView() {
-        new AsyncTask<String, Integer, Boolean>() {
-            List<Path> tempPath;
-            float scale;
-            Bitmap tempBitmap;
-
-            @Override
-            protected void onPreExecute() {
-                isProcessing = true;
-
-                tempPath = JZMaskingView.getAndRemoveAllPath();
-                scale = JZMaskingView.getImageViewScale();
-                JZMaskingView.resetMatrix();
-                progressBar.setVisibility(View.VISIBLE);
-                tempBitmap = JZMaskingView.getImageBitmap();
-            }
-
-            @Override
-            protected Boolean doInBackground(String... params) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                if (tempBitmap != null && !tempBitmap.isRecycled()) {
-                    final Bitmap destBitmap = Bitmap.createBitmap(tempBitmap, 0, 0,
-                            tempBitmap.getWidth(), tempBitmap.getHeight(), matrix, false);
-                    tempBitmap.recycle();
-                    tempBitmap = null;
-                    if (destBitmap != null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                BitmapDrawable drawable = (BitmapDrawable) JZMaskingView.getDrawable();
-                                if (drawable != null) {
-                                    Bitmap temp = drawable.getBitmap();
-                                    if (temp != null) {
-                                        temp.recycle();
-                                        temp = null;
-                                    }
-                                }
-                                JZMaskingView.setImageBitmap(destBitmap);
-                                JZMaskingView.rotatePaths(tempPath, scale);
-                            }
-                        });
-                    }
-                } else {
-                    Log.d(Consts.LogTag, "Get Bitmap From ImageView Failed or Bitmap is Recycled...");
-                }
-
-                return true;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                isProcessing = false;
-                progressBar.setVisibility(View.GONE);
-            }
-        }.execute();
-    }
-
-    private void saveBitmapToFile() {
-        new AsyncTask<String, Integer, Boolean>() {
-            @Override
-            protected void onPreExecute() {
-                JZMaskingView.resetMatrix();
-
-                progressBar.setVisibility(View.VISIBLE);
-                isProcessing = true;
-            }
-
-            @Override
-            protected Boolean doInBackground(String... params) {
-                try {
-                    saveToFile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return true;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                progressBar.setVisibility(View.GONE);
-                isProcessing = false;
-
-                Intent intent = new Intent(MaskingActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        }.execute();
-    }
-
-    private void saveToFile() throws Exception {
-        bitmap = JZMaskingView.getViewBitmap();
-
-        if (bitmap == null) {
-            Log.d(Consts.LogTag, "Masking GetFile bitmap is null");
-        }
-
-        // 生成输出流
-        File deleteFile = new File(FileUtils.getFilePathFromUri(this, uri));
-        if (deleteFile.exists())
-            deleteFile.delete();
-
-        File file = new File(FileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
-        // 文件如果不存在，创建文件
-        if (!file.exists())
-            file.getParentFile().mkdirs();
-
-        FileOutputStream out = new FileOutputStream(file);
-        // 将Bitmap绘制到文件中
-        bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-        // 释放Bitmap资源
-        bitmap.recycle();
-        // 关闭流
-        out.close();
     }
 }

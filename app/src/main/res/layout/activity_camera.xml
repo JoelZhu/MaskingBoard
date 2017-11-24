@@ -1,43 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/camera_bottomView"
+    <TextureView
+        android:id="@+id/camera_texture"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:background="@color/colorWhite"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBlack"
         android:gravity="center"
-        android:paddingLeft="14dp"
-        android:paddingRight="14dp">
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/camera_hint"
+        android:textColor="@color/colorWhite" />
 
-        <com.joelzhu.maskingboard.views.JZRoundButton
-            android:id="@+id/camera_takePicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/camera_bottomView">
-
-        <TextureView
-            android:id="@+id/camera_texture"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorBlack"
-            android:gravity="center"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:text="@string/camera_hint"
-            android:textColor="@color/colorWhite" />
-    </FrameLayout>
-</RelativeLayout>
+    <com.joelzhu.maskingboard.views.JZRoundButton
+        android:id="@+id/camera_takePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="48dp" />
+</FrameLayout>

@@ -3,12 +3,11 @@ package com.joelzhu.maskingboard.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
 
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
-import com.joelzhu.maskingboard.utils.Consts;
-import com.joelzhu.maskingboard.utils.FileUtils;
+import com.joelzhu.maskingboard.utils.JZConsts;
+import com.joelzhu.maskingboard.utils.JZFileUtils;
 import com.joelzhu.maskingboard.views.JZAddButton;
 
 /**
@@ -39,11 +38,11 @@ public class MainActivity extends BaseActivity implements JZAddButton.OnButtonCl
 
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
-                case Consts.GALLERY_REQUEST_CODE:
+                case JZConsts.GALLERY_REQUEST_CODE:
                     // 相册
-                    String filePath = FileUtils.getFilePathFromUri(MainActivity.this, data.getData());
+                    String filePath = JZFileUtils.getFilePathFromUri(MainActivity.this, data.getData());
                     Intent intent = new Intent(this, MaskingActivity.class);
-                    intent.putExtra(Consts.ExtraPictureUri, filePath);
+                    intent.putExtra(JZConsts.ExtraPictureUri, filePath);
                     startActivity(intent);
                     break;
             }
@@ -60,6 +59,6 @@ public class MainActivity extends BaseActivity implements JZAddButton.OnButtonCl
     public void onGalleryClick() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        startActivityForResult(galleryIntent, Consts.GALLERY_REQUEST_CODE);
+        startActivityForResult(galleryIntent, JZConsts.GALLERY_REQUEST_CODE);
     }
 }

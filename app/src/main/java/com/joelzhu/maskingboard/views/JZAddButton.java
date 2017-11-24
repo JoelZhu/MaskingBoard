@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.joelzhu.maskingboard.R;
-import com.joelzhu.maskingboard.utils.DisplayUtils;
+import com.joelzhu.maskingboard.utils.JZDisplayUtils;
 
 public class JZAddButton extends View {
     // 是否需要展开按钮
@@ -75,13 +75,13 @@ public class JZAddButton extends View {
         if (widthMode == MeasureSpec.EXACTLY) {
             widgetWidth = widthSize;
         } else {
-            widgetWidth = DisplayUtils.dp2Px(getContext(), 70);
+            widgetWidth = JZDisplayUtils.dp2Px(getContext(), 70);
         }
 
         if (heightMode == MeasureSpec.EXACTLY) {
             widgetHeight = heightSize;
         } else {
-            widgetHeight = DisplayUtils.dp2Px(getContext(), 70);
+            widgetHeight = JZDisplayUtils.dp2Px(getContext(), 70);
         }
 
         if (widgetWidth <= widgetHeight) {

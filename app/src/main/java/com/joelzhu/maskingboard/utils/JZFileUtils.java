@@ -3,6 +3,7 @@ package com.joelzhu.maskingboard.utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -14,7 +15,16 @@ import java.io.File;
  *
  * @author JoelZhu
  */
-public final class FileUtils {
+public final class JZFileUtils {
+    public static Bitmap tempBitmap;
+
+    public static void destroyBitmap() {
+        if (tempBitmap != null) {
+            tempBitmap.recycle();
+            tempBitmap = null;
+        }
+    }
+
     /**
      * 文件根目录
      *
