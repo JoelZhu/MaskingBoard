@@ -26,10 +26,16 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     private static final int BUTTON_ICON_WIDTH = 39;
     private static final int BUTTON_ICON_HEIGHT = 30;
 
+    // 控件
     private JZMaskingView jzMaskingView;
+
+    // Bitmap对象
     private Bitmap bitmap;
+
+    // 等待框
     private ProgressBar progressBar;
 
+    // 是否在处理中
     public boolean isProcessing = false;
 
     // 按钮
@@ -68,6 +74,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         // 加载图片到控件上
         loadPictureToWidget(rotateDegree);
 
+        // 计算出提示框到高度
         View maskingHint = findViewById(R.id.masking_maskingHint);
         int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -80,6 +87,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     protected void onPause() {
         super.onPause();
 
+        // 回收Bitmap
         if (bitmap != null) {
             bitmap.recycle();
             bitmap = null;

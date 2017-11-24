@@ -23,21 +23,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonClickListener {
+    // View类型
     private final int ItemAdd = 0;
     private final int ItemPicture = 1;
 
+    // 宿主Activity
     private Activity activity;
+
+    // 文件数组
     private List<Uri> uris;
 
-    // Item宽度
-    private int width;
-    // Item高度
-    private int height;
+    // Item宽高
+    private int width, height;
 
+    /**
+     * 适配器构造函数
+     *
+     * @param activity 素质Activity
+     * @param uris 文件数组
+     */
     public PictureAdapter(Activity activity, List<Uri> uris) {
         this.activity = activity;
         this.uris = uris;
 
+        // 如果数组第一个不为空，增加空元素
         if (uris.size() == 0 || uris.get(0) != Uri.EMPTY)
             this.uris.add(0, Uri.EMPTY);
 
@@ -57,6 +66,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
 
     @Override
     public int getViewTypeCount() {
+        // 添加按钮和图片两种布局
         return 2;
     }
 
@@ -72,6 +82,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
 
     @Override
     public int getItemViewType(int position) {
+        // 如果是第一个元素，设置为添加按钮布局，其他元素为图片布局
         return position == 0 ? ItemAdd : ItemPicture;
     }
 
@@ -79,9 +90,11 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
     public View getView(int position, View convertView, ViewGroup parent) {
         switch (getItemViewType(position)) {
             case ItemAdd:
+                // 添加
                 return getViewItemAdd(position, convertView, parent);
 
             case ItemPicture:
+                // 图片
                 return getViewItemPicture(position, convertView, parent);
         }
         return convertView;
@@ -89,12 +102,14 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
 
     @Override
     public void onCameraClick() {
+        // 跳转拍照页面
         Intent cameraIntent = new Intent(activity, CameraActivity.class);
         activity.startActivity(cameraIntent);
     }
 
     @Override
     public void onGalleryClick() {
+        // 跳转系统相册
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         activity.startActivityForResult(galleryIntent, JZConsts.GALLERY_REQUEST_CODE);
@@ -102,6 +117,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
 
     @Override
     public void notifyDataSetChanged() {
+        // 判断第一个是否是空元素，如果不是，增加空元素
         if (uris.get(0) != Uri.EMPTY)
             uris.add(0, Uri.EMPTY);
 
@@ -116,6 +132,14 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
         JZAddButton addView;
     }
 
+    /**
+     * 构建添加按钮布局
+     *
+     * @param position 位置
+     * @param convertView 控件View
+     * @param parent 父布局
+     * @return 控件View
+     */
     private View getViewItemAdd(int position, View convertView, ViewGroup parent) {
         AddViewHolder viewHolder;
 
@@ -137,6 +161,14 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
         return convertView;
     }
 
+    /**
+     * 构建图片布局
+     *
+     * @param position 位置
+     * @param convertView 控件View
+     * @param parent 父布局
+     * @return 控件View
+     */
     private View getViewItemPicture(int position, View convertView, ViewGroup parent) {
         PictureViewHolder viewHolder;
 

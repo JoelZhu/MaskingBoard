@@ -21,8 +21,10 @@ import java.util.List;
  * @author JoelZhu
  */
 public class MainActivity extends BaseActivity {
+    // 适配器
     private PictureAdapter adapter;
 
+    // 图片文件数组
     private List<Uri> uris;
 
     @Override
@@ -38,8 +40,10 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 初始化数组
         uris = new ArrayList<>();
 
+        // 配置GridView
         GridView gridView = (GridView) findViewById(R.id.main_gridView);
         adapter = new PictureAdapter(this, uris);
         gridView.setAdapter(adapter);
@@ -49,11 +53,13 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
+        // 更新文件数组
         uris.clear();
         File file = new File(JZFileUtils.getFileDir());
         for (File childFile : file.listFiles()) {
             uris.add(Uri.fromFile(childFile));
         }
+        // 通知适配器数据修改
         adapter.notifyDataSetChanged();
     }
 
