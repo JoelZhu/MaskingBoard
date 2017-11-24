@@ -1,21 +1,30 @@
 package com.joelzhu.maskingboard.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.widget.GridView;
 
 import com.joelzhu.maskingboard.R;
+import com.joelzhu.maskingboard.adapters.PictureAdapter;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.JZConsts;
 import com.joelzhu.maskingboard.utils.JZFileUtils;
-import com.joelzhu.maskingboard.views.JZAddButton;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 主界面
  *
  * @author JoelZhu
  */
-public class MainActivity extends BaseActivity implements JZAddButton.OnButtonClickListener {
+public class MainActivity extends BaseActivity {
+    private PictureAdapter adapter;
+
+    private List<Uri> uris;
+
     @Override
     protected LayoutAttrs setLayoutAttributes() {
         return new LayoutAttrs.Builder()
@@ -29,7 +38,23 @@ public class MainActivity extends BaseActivity implements JZAddButton.OnButtonCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((JZAddButton)findViewById(R.id.main_addButton)).setOnButtonClickListener(this);
+        uris = new ArrayList<>();
+
+        GridView gridView = (GridView) findViewById(R.id.main_gridView);
+        adapter = new PictureAdapter(this, uris);
+        gridView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        uris.clear();
+        File file = new File(JZFileUtils.getFileDir());
+        for (File childFile : file.listFiles()) {
+            uris.add(Uri.fromFile(childFile));
+        }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -48,18 +73,5 @@ public class MainActivity extends BaseActivity implements JZAddButton.OnButtonCl
                     break;
             }
         }
-    }
-
-    @Override
-    public void onCameraClick() {
-        Intent cameraIntent = new Intent(this, CameraActivity.class);
-        startActivity(cameraIntent);
-    }
-
-    @Override
-    public void onGalleryClick() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        startActivityForResult(galleryIntent, JZConsts.GALLERY_REQUEST_CODE);
     }
 }

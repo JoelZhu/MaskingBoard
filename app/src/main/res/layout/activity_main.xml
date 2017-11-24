@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_gridView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    android:gravity="center"
-    android:orientation="vertical">
-
-    <Button
-        android:id="@+id/main_fromCamera"
-        android:layout_width="250dp"
-        android:layout_height="48dp"
-        android:visibility="gone"
-        android:text="From Camera"/>
-
-    <Button
-        android:id="@+id/main_fromGallery"
-        android:layout_width="250dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="48dp"
-        android:visibility="gone"
-        android:text="From Gallery"/>
-
-    <com.joelzhu.maskingboard.views.JZAddButton
-        android:id="@+id/main_addButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+    android:numColumns="3" />

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.joelzhu.maskingboard.views.JZAddButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemAdd_addButton"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
