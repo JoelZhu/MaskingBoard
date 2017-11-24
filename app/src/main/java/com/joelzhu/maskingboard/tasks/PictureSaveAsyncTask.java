@@ -2,7 +2,6 @@ package com.joelzhu.maskingboard.tasks;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -24,9 +23,7 @@ import java.util.Date;
  *
  * @author JoelZhu
  */
-public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean> {
-    private Uri uri;
-
+public final class PictureSaveAsyncTask extends AsyncTask<String, Integer, Boolean> {
     // 弱引用防止内存泄漏
     private WeakReference<MaskingActivity> activityWeakReference;
     private WeakReference<JZMaskingView> jzMaskingViewWeakReference;
@@ -41,9 +38,9 @@ public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean>
     /**
      * 公有构造函数
      *
-     * @param activity 宿主Activity
+     * @param activity      宿主Activity
      * @param jzMaskingView 自定义涂鸦控件
-     * @param progressBar ProgressBar
+     * @param progressBar   ProgressBar
      */
     public PictureSaveAsyncTask(MaskingActivity activity, JZMaskingView jzMaskingView, ProgressBar progressBar) {
         activityWeakReference = new WeakReference<>(activity);
@@ -60,10 +57,7 @@ public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean>
     }
 
     @Override
-    protected Boolean doInBackground(Uri... uris) {
-        if (uris != null && uris.length > 0)
-            uri = uris[0];
-
+    protected Boolean doInBackground(String... strings) {
         try {
             saveToFile();
         } catch (Exception e) {
@@ -80,6 +74,8 @@ public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean>
 
         Intent intent = new Intent(activityWeakReference.get(), MainActivity.class);
         activityWeakReference.get().startActivity(intent);
+
+        JZFileUtils.destroyBitmap();
     }
 
     private void saveToFile() throws Exception {
@@ -91,10 +87,6 @@ public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean>
         }
 
         // 生成输出流
-        File deleteFile = new File(JZFileUtils.getFilePathFromUri(activityWeakReference.get(), uri));
-        if (deleteFile.exists())
-            deleteFile.delete();
-
         File file = new File(JZFileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
         // 文件如果不存在，创建文件
         if (!file.exists())

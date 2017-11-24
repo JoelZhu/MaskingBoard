@@ -17,6 +17,7 @@ import com.joelzhu.maskingboard.tasks.PictureRotateAsyncTask;
 import com.joelzhu.maskingboard.tasks.PictureSaveAsyncTask;
 import com.joelzhu.maskingboard.utils.JZConsts;
 import com.joelzhu.maskingboard.utils.JZDisplayUtils;
+import com.joelzhu.maskingboard.utils.JZFileUtils;
 import com.joelzhu.maskingboard.views.JZMaskingView;
 
 public class MaskingActivity extends BaseActivity implements View.OnClickListener, JZMaskingView
@@ -28,8 +29,6 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     private JZMaskingView jzMaskingView;
     private Bitmap bitmap;
     private ProgressBar progressBar;
-
-    private Uri uri;
 
     public boolean isProcessing = false;
 
@@ -52,48 +51,22 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         // 初始化控件
         initWidget();
 
-        uri = Uri.parse(getIntent().getStringExtra(JZConsts.ExtraPictureUri));
+        // 是否是相机拍摄的照片
+        boolean isFromCamera = getIntent().getBooleanExtra(JZConsts.ExtraIsFromCamera, false);
+        // 旋转角度
         int rotateDegree = getIntent().getIntExtra(JZConsts.ExtraRotateDegree, 90);
 
-        //        if (!"content".equals(uri.getScheme()))
-        //        {
-        bitmap = BitmapFactory.decodeFile(uri.getPath());
-        //        }
-        //        else
-        //        {
-        //            bitmap = BitmapFactory.decodeFile(FileUtil.GetPath(this, uri));
-        //        }
-
-        if (bitmap != null) {
-            Matrix matrix = new Matrix();
-            if (rotateDegree != 0) {
-                matrix.setRotate(rotateDegree);
-            }
-
-            int bitmapWidth = bitmap.getWidth();
-            int bitmapHeight = bitmap.getHeight();
-            Bitmap destBitmap;
-            if (bitmapWidth > JZConsts.ORIGIN_MAX || bitmapHeight > JZConsts.ORIGIN_MAX) {
-                float scale;
-
-                if (bitmapWidth > bitmapHeight) {
-                    scale = (float) JZConsts.ORIGIN_MAX / bitmap.getWidth();
-                    bitmapWidth = JZConsts.ORIGIN_MAX;
-                    bitmapHeight = (int) (scale * bitmap.getHeight());
-                } else {
-                    scale = (float) JZConsts.ORIGIN_MAX / bitmap.getHeight();
-                    bitmapWidth = (int) (scale * bitmap.getWidth());
-                    bitmapHeight = JZConsts.ORIGIN_MAX;
-                }
-
-                matrix.setScale(scale, scale);
-            }
-
-            destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
-            jzMaskingView.setImageBitmap(destBitmap);
-        } else {
-            Log.d(JZConsts.LogTag, "Masking OnCreate bitmap is null");
+        // 如果是相机拍摄而来，读取全局Bitmap
+        if (isFromCamera)
+            bitmap = JZFileUtils.tempBitmap;
+        // 如果是相册而来，读取文件
+        else {
+            Uri uri = Uri.parse(getIntent().getStringExtra(JZConsts.ExtraPictureUri));
+            bitmap = BitmapFactory.decodeFile(uri.getPath());
         }
+
+        // 加载图片到控件上
+        loadPictureToWidget(rotateDegree);
 
         View maskingHint = findViewById(R.id.masking_maskingHint);
         int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -147,9 +120,26 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
             // 保存
             case R.id.masking_finish:
-                new PictureSaveAsyncTask(this, jzMaskingView, progressBar).execute(uri);
+                new PictureSaveAsyncTask(this, jzMaskingView, progressBar).execute();
                 break;
         }
+    }
+
+    @Override
+    public void onPathCountChange() {
+        if (jzMaskingView.canGoBack()) {
+            goBackButton.setEnabled(true);
+        } else {
+            goBackButton.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 点击回退键，删除全局Bitmap
+        JZFileUtils.destroyBitmap();
+
+        super.onBackPressed();
     }
 
     /**
@@ -197,12 +187,43 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         jzMaskingView.setMaskingMode(false);
     }
 
-    @Override
-    public void onPathCountChange() {
-        if (jzMaskingView.canGoBack()) {
-            goBackButton.setEnabled(true);
+    /**
+     * 加载图片到控件上
+     *
+     * @param rotateDegree 旋转角度
+     */
+    private void loadPictureToWidget(int rotateDegree) {
+        if (bitmap != null) {
+            Matrix matrix = new Matrix();
+            if (rotateDegree != 0) {
+                matrix.setRotate(rotateDegree);
+            }
+
+            int bitmapWidth = bitmap.getWidth();
+            int bitmapHeight = bitmap.getHeight();
+            Bitmap destBitmap;
+
+            // 如果图片大于最大尺寸，进行剪裁
+            if (bitmapWidth > JZConsts.ORIGIN_MAX || bitmapHeight > JZConsts.ORIGIN_MAX) {
+                float scale;
+
+                if (bitmapWidth > bitmapHeight) {
+                    scale = (float) JZConsts.ORIGIN_MAX / bitmap.getWidth();
+                    bitmapWidth = JZConsts.ORIGIN_MAX;
+                    bitmapHeight = (int) (scale * bitmap.getHeight());
+                } else {
+                    scale = (float) JZConsts.ORIGIN_MAX / bitmap.getHeight();
+                    bitmapWidth = (int) (scale * bitmap.getWidth());
+                    bitmapHeight = JZConsts.ORIGIN_MAX;
+                }
+
+                matrix.setScale(scale, scale);
+            }
+
+            destBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
+            jzMaskingView.setImageBitmap(destBitmap);
         } else {
-            goBackButton.setEnabled(false);
+            Log.d(JZConsts.LogTag, "Masking OnCreate bitmap is null");
         }
     }
 }

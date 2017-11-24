@@ -43,6 +43,7 @@ public class MainActivity extends BaseActivity implements JZAddButton.OnButtonCl
                     String filePath = JZFileUtils.getFilePathFromUri(MainActivity.this, data.getData());
                     Intent intent = new Intent(this, MaskingActivity.class);
                     intent.putExtra(JZConsts.ExtraPictureUri, filePath);
+                    intent.putExtra(JZConsts.ExtraRotateDegree, 0);
                     startActivity(intent);
                     break;
             }

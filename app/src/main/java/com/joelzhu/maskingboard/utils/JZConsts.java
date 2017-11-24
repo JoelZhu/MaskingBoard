@@ -21,4 +21,5 @@ public final class JZConsts {
     // Intent参数key值
     public static final String ExtraPictureUri = "ExtraPictureUri";
     public static final String ExtraRotateDegree = "ExtraRotateDegree";
+    public static final String ExtraIsFromCamera = "ExtraIsFromCamera";
 }
