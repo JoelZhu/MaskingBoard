@@ -38,6 +38,9 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     // 是否在处理中
     public boolean isProcessing = false;
 
+    // 文件Uri(接收从本应用文件夹中选取到图片)
+    private Uri uri;
+
     // 按钮
     private Button goBackButton, maskingButton, dragButton;
 
@@ -65,9 +68,9 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         // 如果是相机拍摄而来，读取全局Bitmap
         if (isFromCamera)
             bitmap = JZFileUtils.tempBitmap;
-        // 如果是相册而来，读取文件
+            // 如果是相册而来，读取文件
         else {
-            Uri uri = Uri.parse(getIntent().getStringExtra(JZConsts.ExtraPictureUri));
+            uri = Uri.parse(getIntent().getStringExtra(JZConsts.ExtraPictureUri));
             bitmap = BitmapFactory.decodeFile(uri.getPath());
         }
 
@@ -128,7 +131,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
             // 保存
             case R.id.masking_finish:
-                new PictureSaveAsyncTask(this, jzMaskingView, progressBar).execute();
+                new PictureSaveAsyncTask(this, jzMaskingView, progressBar).execute(uri);
                 break;
         }
     }

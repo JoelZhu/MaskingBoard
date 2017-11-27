@@ -2,9 +2,7 @@ package com.joelzhu.maskingboard.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +14,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.joelzhu.maskingboard.R;
-import com.joelzhu.maskingboard.activities.CameraActivity;
-import com.joelzhu.maskingboard.utils.JZConsts;
 import com.joelzhu.maskingboard.utils.JZDisplayUtils;
 import com.joelzhu.maskingboard.views.JZAddButton;
 
@@ -28,6 +24,8 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
     private final static int ItemAdd = 0;
     private final static int ItemPicture = 1;
     private final static int ItemCount = 2;
+
+    private OnButtonClickListener listener;
 
     // 宿主Activity
     private Activity activity;
@@ -111,17 +109,14 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
 
     @Override
     public void onCameraClick() {
-        // 跳转拍照页面
-        Intent cameraIntent = new Intent(activity, CameraActivity.class);
-        activity.startActivity(cameraIntent);
+        if (listener != null)
+            listener.onCameraClick();
     }
 
     @Override
     public void onGalleryClick() {
-        // 跳转系统相册
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        activity.startActivityForResult(galleryIntent, JZConsts.GALLERY_REQUEST_CODE);
+        if (listener != null)
+            listener.onGalleryClick();
     }
 
     @Override
@@ -197,5 +192,15 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
         Glide.with(activity).load(uris.get(position)).into(viewHolder.imageView);
 
         return convertView;
+    }
+
+    public interface OnButtonClickListener {
+        void onCameraClick();
+
+        void onGalleryClick();
+    }
+
+    public void setOnButtonClickListener(OnButtonClickListener listener) {
+        this.listener = listener;
     }
 }

@@ -12,8 +12,12 @@ public final class JZConsts {
     // 相册请求码
     public static final int GALLERY_REQUEST_CODE = 101;
 
+    // 应用首次权限请求码
+    public static final int INIT_PERMISSION = 0;
     // 相机权限请求码
-    public static final int CAMERA_PERMISSION_REQUEST = 1;
+    public static final int CAMERA_PERMISSION = 1;
+    // 读写权限请求码
+    public static final int GALLERY_PERMISSION = 2;
 
     // 裁剪图片最大尺寸
     public static final int ORIGIN_MAX = 4000;

@@ -7,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Surface;
@@ -194,50 +193,18 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         // do nothing
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        if (requestCode == JZConsts.CAMERA_PERMISSION_REQUEST) {
-            //if (!DeviceUtil.IsGrantedCameraPermission(this))
-            //{
-            //	var intent = new Intent(this, typeof(CaradaWebViewActivity));
-            //	StartActivity(intent);
-            //	OverridePendingTransition(Resource.Animation.in_right, Resource.Animation.out_left);
-            //}
-            //else
-            //{
-            //	Finish();
-            //	StartActivity(Intent);
-            //	OverridePendingTransition(Resource.Animation.in_right, Resource.Animation.out_left);
-            //}
-            // TODO never granted permission
-        }
-    }
-
     /**
      * 初始化相机
      *
      * @param surface
      */
     private void initCamera(SurfaceTexture surface) {
-        // TODO deal with permission
-        //if (!DeviceUtil.IsGrantedCameraPermission(this))
-        //{
-        //	if (!ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Camera))
-        //	{
-        //		ShowPermissionDialog();
-        //		return;
-        //	}
-
-        //	ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.Camera },
-        // CAMERA_PERMISSION_REQUEST);
-        //}
-        //else
-        //{
+        // 如果可用相机为空，跳过下面操作
         if (Camera.getNumberOfCameras() == 0) {
-            //            System.Diagnostics.Debug.WriteLine("Cemera not supported.");
+            // TODO
             return;
         }
+
         if (camera == null) {
             camera = Camera.open();
             if (camera == null)
@@ -328,7 +295,6 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         } catch (IOException ex) {
             //            Console.WriteLine(ex.Message);
         }
-        //}
     }
 
     /**

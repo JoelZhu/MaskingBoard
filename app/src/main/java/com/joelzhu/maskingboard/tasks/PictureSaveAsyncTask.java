@@ -2,6 +2,7 @@ package com.joelzhu.maskingboard.tasks;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.joelzhu.maskingboard.views.JZMaskingView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 
@@ -23,7 +25,7 @@ import java.util.Date;
  *
  * @author JoelZhu
  */
-public final class PictureSaveAsyncTask extends AsyncTask<String, Integer, Boolean> {
+public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean> {
     // 弱引用防止内存泄漏
     private WeakReference<MaskingActivity> activityWeakReference;
     private WeakReference<JZMaskingView> jzMaskingViewWeakReference;
@@ -57,9 +59,12 @@ public final class PictureSaveAsyncTask extends AsyncTask<String, Integer, Boole
     }
 
     @Override
-    protected Boolean doInBackground(String... strings) {
+    protected Boolean doInBackground(Uri... uris) {
         try {
-            saveToFile();
+            if (uris == null || uris.length < 1)
+                saveToFile(null);
+            else
+                saveToFile(uris[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +83,12 @@ public final class PictureSaveAsyncTask extends AsyncTask<String, Integer, Boole
         JZFileUtils.destroyBitmap();
     }
 
-    private void saveToFile() throws Exception {
+    /**
+     * 保存为图片
+     *
+     * @param uri 文件Uri
+     */
+    private void saveToFile(Uri uri) {
         Bitmap bitmap = jzMaskingViewWeakReference.get().getViewBitmap();
 
         if (bitmap == null) {
@@ -87,17 +97,28 @@ public final class PictureSaveAsyncTask extends AsyncTask<String, Integer, Boole
         }
 
         // 生成输出流
-        File file = new File(JZFileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
+        File file;
+        if (uri == null)
+            file = new File(JZFileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
+        else {
+            file = new File(JZFileUtils.getFilePathFromUri(activityWeakReference.get(), uri));
+            file.delete();
+        }
+
         // 文件如果不存在，创建文件
         if (!file.exists())
             file.getParentFile().mkdirs();
 
-        FileOutputStream out = new FileOutputStream(file);
-        // 将Bitmap绘制到文件中
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-        // 释放Bitmap资源
-        bitmap.recycle();
-        // 关闭流
-        out.close();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            // 将Bitmap绘制到文件中
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            // 释放Bitmap资源
+            bitmap.recycle();
+            // 关闭流
+            out.close();
+        } catch (IOException e) {
+            // do nothing
+        }
     }
 }
