@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +18,16 @@ import com.bumptech.glide.Glide;
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.activities.CameraActivity;
 import com.joelzhu.maskingboard.utils.JZConsts;
+import com.joelzhu.maskingboard.utils.JZDisplayUtils;
 import com.joelzhu.maskingboard.views.JZAddButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonClickListener {
     // View类型
-    private final int ItemAdd = 0;
-    private final int ItemPicture = 1;
+    private final static int ItemAdd = 0;
+    private final static int ItemPicture = 1;
+    private final static int ItemCount = 2;
 
     // 宿主Activity
     private Activity activity;
@@ -34,13 +36,13 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
     private List<Uri> uris;
 
     // Item宽高
-    private int width, height;
+    private int itemSize;
 
     /**
      * 适配器构造函数
      *
      * @param activity 素质Activity
-     * @param uris 文件数组
+     * @param uris     文件数组
      */
     public PictureAdapter(Activity activity, List<Uri> uris) {
         this.activity = activity;
@@ -51,12 +53,20 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
             this.uris.add(0, Uri.EMPTY);
 
         // 根据屏幕大小计算item的长宽
-        WindowManager windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
-        if (windowManager != null) {
-            width = windowManager.getDefaultDisplay().getWidth() / 3;
-            height = (int) (width * 1.5);
+        final WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+        if (wm != null) {
+            // 计算出屏幕大小
+            DisplayMetrics dm = new DisplayMetrics();
+            wm.getDefaultDisplay().getMetrics(dm);
+            // 获取GridView的展示栏目值
+            final int columns = activity.getResources().getInteger(R.integer.grid_columns);
+            // 获取GridView的margin值
+            final float margin = activity.getResources().getDimension(R.dimen.grid_margin) * 2;
+            // 减去GridView的左右margin
+            final int displayDp = dm.widthPixels - JZDisplayUtils.dp2Px(activity, margin);
+            // 计算Item大小
+            itemSize = displayDp / columns;
         }
-
     }
 
     @Override
@@ -66,8 +76,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
 
     @Override
     public int getViewTypeCount() {
-        // 添加按钮和图片两种布局
-        return 2;
+        return ItemCount;
     }
 
     @Override
@@ -135,9 +144,9 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
     /**
      * 构建添加按钮布局
      *
-     * @param position 位置
+     * @param position    位置
      * @param convertView 控件View
-     * @param parent 父布局
+     * @param parent      父布局
      * @return 控件View
      */
     private View getViewItemAdd(int position, View convertView, ViewGroup parent) {
@@ -149,7 +158,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
             viewHolder = new AddViewHolder();
             viewHolder.addView = (JZAddButton) convertView.findViewById(R.id.itemAdd_addButton);
 
-            convertView.setLayoutParams(new GridView.LayoutParams(width, height));
+            convertView.setLayoutParams(new GridView.LayoutParams(itemSize, itemSize));
 
             convertView.setTag(viewHolder);
         } else {
@@ -164,9 +173,9 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
     /**
      * 构建图片布局
      *
-     * @param position 位置
+     * @param position    位置
      * @param convertView 控件View
-     * @param parent 父布局
+     * @param parent      父布局
      * @return 控件View
      */
     private View getViewItemPicture(int position, View convertView, ViewGroup parent) {
@@ -178,7 +187,7 @@ public class PictureAdapter extends BaseAdapter implements JZAddButton.OnButtonC
             viewHolder = new PictureViewHolder();
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.itemPicture_imageView);
 
-            convertView.setLayoutParams(new GridView.LayoutParams(width, height));
+            convertView.setLayoutParams(new GridView.LayoutParams(itemSize, itemSize));
 
             convertView.setTag(R.id.image_tag, viewHolder);
         } else {

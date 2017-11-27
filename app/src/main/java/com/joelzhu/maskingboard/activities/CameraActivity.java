@@ -112,7 +112,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
         if (sensorManager != null)
             // 如果传感器不为空，注册传感器
             sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_UI);
+                    SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -244,7 +244,7 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
                 camera = Camera.open(0);
         }
 
-        setCameraDisplayOrientation(0);
+        setCameraDisplayOrientation();
 
         if (isFirst) {
             textureWidth = textureView.getWidth();
@@ -333,13 +333,11 @@ public class CameraActivity extends BaseActivity implements Camera.PictureCallba
 
     /**
      * 设置相机展示方向
-     *
-     * @param cameraId
      */
-    private void setCameraDisplayOrientation(int cameraId) {
+    private void setCameraDisplayOrientation() {
         // 获取相机信息对象
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        Camera.getCameraInfo(cameraId, cameraInfo);
+        Camera.getCameraInfo(0, cameraInfo);
 
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;

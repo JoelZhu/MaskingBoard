@@ -2,6 +2,7 @@ package com.joelzhu.maskingboard.views;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -113,6 +114,7 @@ public class JZAddButton extends View {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -189,7 +191,7 @@ public class JZAddButton extends View {
     /**
      * 绘制原始状态的控件
      *
-     * @param canvas
+     * @param canvas 画布对象
      */
     private void drawOriginWidget(Canvas canvas) {
         paint.reset();
@@ -202,7 +204,7 @@ public class JZAddButton extends View {
     /**
      * 绘制展开中状态的控件
      *
-     * @param canvas
+     * @param canvas 画布对象
      */
     private void drawExpendingWidget(Canvas canvas) {
         // 绘制添加按钮
@@ -229,7 +231,7 @@ public class JZAddButton extends View {
     /**
      * 绘制展开完成状态的控件
      *
-     * @param canvas
+     * @param canvas 画布对象
      */
     private void drawExpendedWidget(Canvas canvas) {
         paint.reset();
