@@ -96,14 +96,15 @@ public final class PictureSaveAsyncTask extends AsyncTask<Uri, Integer, Boolean>
             return;
         }
 
-        // 生成输出流
-        File file;
-        if (uri == null)
-            file = new File(JZFileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
-        else {
-            file = new File(JZFileUtils.getFilePathFromUri(activityWeakReference.get(), uri));
+        // 参数uri不为空
+        if (uri != null) {
+            // 删除原本文件
+            final File file = new File(JZFileUtils.getFilePathFromUri(activityWeakReference.get(), uri));
             file.delete();
         }
+
+        // 生成输出文件
+        File file = new File(JZFileUtils.getFileDir() + File.separator + new Date().getTime() + ".png");
 
         // 文件如果不存在，创建文件
         if (!file.exists())

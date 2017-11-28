@@ -1,5 +1,6 @@
 package com.joelzhu.maskingboard.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,7 +12,6 @@ import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -160,11 +160,11 @@ public class JZMaskingView extends AppCompatImageView {
         canvas.drawPath(path, paint);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         // 当前处于涂鸦模式中
         if (isMasking) {
-            Log.d("MaskingTag", "e.x: " + e.getX() + " - e.y: " + e.getY());
             switch (e.getAction()) {
                 // 按下事件
                 case MotionEvent.ACTION_DOWN:
