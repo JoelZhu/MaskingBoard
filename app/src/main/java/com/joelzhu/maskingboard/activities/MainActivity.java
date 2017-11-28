@@ -1,6 +1,8 @@
 package com.joelzhu.maskingboard.activities;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.adapters.PictureAdapter;
@@ -37,6 +38,11 @@ public class MainActivity extends BaseActivity implements PictureAdapter.OnButto
 
     // 图片文件数组
     private List<Uri> uris;
+
+    // 没有存储权限警告框
+    private AlertDialog storageRequireDialog;
+    // 权限不足警告框
+    private AlertDialog permissionInsufficientDialog;
 
     @Override
     protected LayoutAttrs setLayoutAttributes() {
@@ -74,6 +80,29 @@ public class MainActivity extends BaseActivity implements PictureAdapter.OnButto
             // 设置应用为非首次运行
             JZSharedPerferenceUtils.setAppFirstLaunch(this);
         }
+
+        // 初始化权限不足警告框
+        storageRequireDialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setMessage(getString(R.string.permission_storage))
+                .setPositiveButton(getString(R.string.permission_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        storageRequireDialog.dismiss();
+                    }
+                })
+                .create();
+        // 初始化存储权限警告框
+        permissionInsufficientDialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setMessage(getString(R.string.permission_require))
+                .setPositiveButton(getString(R.string.permission_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        permissionInsufficientDialog.dismiss();
+                    }
+                })
+                .create();
     }
 
     @Override
@@ -121,7 +150,7 @@ public class MainActivity extends BaseActivity implements PictureAdapter.OnButto
                 for (int i = 0; i < permissions.length; i++) {
                     if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[i]) &&
                             grantResults[i] == PackageManager.PERMISSION_DENIED)
-                        Toast.makeText(this, "读写权限被拒绝，将无法正常使用", Toast.LENGTH_SHORT).show();
+                        storageRequireDialog.show();
                 }
                 break;
 
@@ -149,22 +178,19 @@ public class MainActivity extends BaseActivity implements PictureAdapter.OnButto
                     goToCameraActivity();
                 else if (shouldShowHint)
                     // 用户勾选不再提示
-                    Toast.makeText(this, "User Set Never Ask Again", Toast.LENGTH_SHORT).show();
-                else
-                    // 用户拒绝提供权限
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                    permissionInsufficientDialog.show();
                 break;
 
             case JZConsts.GALLERY_PERMISSION:
                 // 图库申请权限
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                    // do nothing
                 } else {
                     if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
                         // 跳转系统相册
                         goToGalleryActivity();
                     } else {
-                        Toast.makeText(this, "User Set Never Ask Again", Toast.LENGTH_SHORT).show();
+                        permissionInsufficientDialog.show();
                     }
                 }
                 break;

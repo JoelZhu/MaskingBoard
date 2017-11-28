@@ -6,4 +6,9 @@
 
     <string name="camera_hint">マスキング画面を撮影してください。</string>
     <string name="masking_hint">氏名、住所、電話番号を\n指でなぞって塗りつぶしてください。</string>
+
+    <!-- 权限 -->
+    <string name="permission_require">全部の許可が付与されていません。\nシステムアプリケーション設定で許可を付与してください。</string>
+    <string name="permission_storage">ストレージの許可が付与されていません，アプリケーション正常に使用できない。</string>
+    <string name="permission_ok">確認</string>
 </resources>

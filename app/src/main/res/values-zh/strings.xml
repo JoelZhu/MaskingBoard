@@ -6,4 +6,9 @@
 
     <string name="camera_hint">拍摄想要进行涂鸦的画面</string>
     <string name="masking_hint">请注意涂抹姓名、住址、电话等个人信息</string>
+
+    <!-- 权限 -->
+    <string name="permission_require">未授予所有权限。\n请在系统应用程序设定中授予权限。</string>
+    <string name="permission_storage">未授予存储权限，应用将无法正常使用。</string>
+    <string name="permission_ok">确认</string>
 </resources>

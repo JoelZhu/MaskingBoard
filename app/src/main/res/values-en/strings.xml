@@ -4,6 +4,11 @@
     <string name="title_camera">Camera</string>
     <string name="title_masking">Masking</string>
 
-    <string name="camera_hint">Please photograph your except masking picture</string>
-    <string name="masking_hint">Please masking your personal information:\nName, Address, Phone Number</string>
+    <string name="camera_hint">Please take a picture before masking</string>
+    <string name="masking_hint">Please notice your personal information:\nName, Address, Phone Number</string>
+
+    <!-- 权限 -->
+    <string name="permission_require">Application never granted all permissions.\nGrant the permissions in the system application settings.</string>
+    <string name="permission_storage">Storage permission is not granted, Application can not be in use normally.</string>
+    <string name="permission_ok">OK</string>
 </resources>
