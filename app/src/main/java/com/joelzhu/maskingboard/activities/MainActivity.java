@@ -4,22 +4,18 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.joelzhu.maskingboard.R;
 import com.joelzhu.maskingboard.adapters.PictureAdapter;
+import com.joelzhu.maskingboard.common.JZPermissionHelper;
 import com.joelzhu.maskingboard.models.LayoutAttrs;
 import com.joelzhu.maskingboard.utils.JZConsts;
-import com.joelzhu.maskingboard.utils.JZDeviceUtils;
 import com.joelzhu.maskingboard.utils.JZFileUtils;
 import com.joelzhu.maskingboard.utils.JZSharedPerferenceUtils;
 
@@ -32,7 +28,8 @@ import java.util.List;
  *
  * @author JoelZhu
  */
-public class MainActivity extends BaseActivity implements PictureAdapter.OnButtonClickListener, AdapterView.OnItemClickListener {
+public class MainActivity extends PermissionBaseActivity implements PictureAdapter.OnButtonClickListener,
+        AdapterView.OnItemClickListener {
     // 适配器
     private PictureAdapter adapter;
 
@@ -72,10 +69,21 @@ public class MainActivity extends BaseActivity implements PictureAdapter.OnButto
         // 判断应用是否是首次运行
         if (JZSharedPerferenceUtils.getAppFirstLaunch(this)) {
             // 初始化申请权限
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                final String[] permissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                requestPermissions(permissions, JZConsts.INIT_PERMISSION);
-            }
+            new JZPermissionHelper.Builder(this)
+                    .onUserDenied(new OnUserDenied() {
+                        @Override
+                        public void onUserDenied(String[] deniedPermissions) {
+                            for (String permission : deniedPermissions) {
+                                if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permission)) {
+                                    storageRequireDialog.show();
+                                    break;
+                                }
+                            }
+                        }
+                    })
+                    .requestCode(JZConsts.INIT_PERMISSION)
+                    .create()
+                    .requestPermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE});
 
             // 设置应用为非首次运行
             JZSharedPerferenceUtils.setAppFirstLaunch(this);
@@ -137,91 +145,66 @@ public class MainActivity extends BaseActivity implements PictureAdapter.OnButto
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        // 跳转涂鸦页面
-        goToMaskingActivity(JZFileUtils.getFilePathFromUri(MainActivity.this, uris.get(position)));
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // 根据请求码判断
-        switch (requestCode) {
-            case JZConsts.INIT_PERMISSION:
-                // 初始化申请权限
-                for (int i = 0; i < permissions.length; i++) {
-                    if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[i]) &&
-                            grantResults[i] == PackageManager.PERMISSION_DENIED)
-                        storageRequireDialog.show();
-                }
-                break;
-
-            case JZConsts.CAMERA_PERMISSION:
-                // 相机申请权限
-                // 是否获取到所有权限标志位
-                boolean canGoToCamera = true;
-                // 用户是否点击了不再提示标志位
-                boolean shouldShowHint = false;
-                for (String permission : permissions) {
-                    // 没有获取到该权限
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                        canGoToCamera = false;
-                    } else {
-                        // 用户点击了不再提示
-                        if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                            canGoToCamera = false;
-                            shouldShowHint = true;
-                        }
-                    }
-                }
-
-                if (canGoToCamera)
-                    // 跳转拍照页面
-                    goToCameraActivity();
-                else if (shouldShowHint)
-                    // 用户勾选不再提示
-                    permissionInsufficientDialog.show();
-                break;
-
-            case JZConsts.GALLERY_PERMISSION:
-                // 图库申请权限
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-                    // do nothing
-                } else {
-                    if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
-                        // 跳转系统相册
-                        goToGalleryActivity();
-                    } else {
-                        permissionInsufficientDialog.show();
-                    }
-                }
-                break;
-        }
+        final Uri tempUri = uris.get(position);
+        if (tempUri != Uri.EMPTY)
+            // 跳转涂鸦页面
+            goToMaskingActivity(JZFileUtils.getFilePathFromUri(MainActivity.this, uris.get(position)));
     }
 
     @Override
     public void onCameraClick() {
-        // 检查是否拥有相机和读写权限
-        if (JZDeviceUtils.isGrantedCameraPermission(this) && !JZDeviceUtils.isGrantedStoragePermission(this))
-            // 缺少读写权限
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, JZConsts.CAMERA_PERMISSION);
-        else if (!JZDeviceUtils.isGrantedCameraPermission(this) && JZDeviceUtils.isGrantedStoragePermission(this))
-            // 缺少相机权限
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, JZConsts.CAMERA_PERMISSION);
-        else if (!JZDeviceUtils.isGrantedCameraPermission(this) && !JZDeviceUtils.isGrantedStoragePermission(this))
-            // 缺少相机和读写权限
-            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, JZConsts.CAMERA_PERMISSION);
-        else
-            // 跳转拍照页面
-            goToCameraActivity();
+        new JZPermissionHelper.Builder(this)
+                .onUserAllowed(new OnUserAllowed() {
+                    @Override
+                    public void onUserAllowed() {
+                        // 跳转拍照页面
+                        goToCameraActivity();
+                    }
+                })
+                .onUserSetNeverAsk(new OnUserSetNeverAsk() {
+                    @Override
+                    public void onUserSetNeverAsk(String[] neverAskPermissions) {
+                        permissionInsufficientDialog.show();
+                    }
+                })
+                .onPermissionsGrantedAlready(new OnPermissionsGrantedAlready() {
+                    @Override
+                    public void onPermissionsGrantedAlready() {
+                        // 跳转拍照页面
+                        goToCameraActivity();
+                    }
+                })
+                .requestCode(JZConsts.CAMERA_PERMISSION)
+                .create()
+                .requestPermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE});
     }
 
     @Override
     public void onGalleryClick() {
-        // 检查是否拥有相机权限
-        if (!JZDeviceUtils.isGrantedStoragePermission(this))
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, JZConsts.GALLERY_PERMISSION);
-        else
-            // 跳转系统相册
-            goToGalleryActivity();
+        new JZPermissionHelper.Builder(this)
+                .onUserAllowed(new OnUserAllowed() {
+                    @Override
+                    public void onUserAllowed() {
+                        // 跳转系统相册
+                        goToGalleryActivity();
+                    }
+                })
+                .onUserSetNeverAsk(new OnUserSetNeverAsk() {
+                    @Override
+                    public void onUserSetNeverAsk(String[] neverAskPermissions) {
+                        permissionInsufficientDialog.show();
+                    }
+                })
+                .onPermissionsGrantedAlready(new OnPermissionsGrantedAlready() {
+                    @Override
+                    public void onPermissionsGrantedAlready() {
+                        // 跳转系统相册
+                        goToGalleryActivity();
+                    }
+                })
+                .requestCode(JZConsts.GALLERY_PERMISSION)
+                .create()
+                .requestPermission(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
     }
 
     /**
