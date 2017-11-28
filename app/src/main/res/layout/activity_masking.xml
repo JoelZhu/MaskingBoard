@@ -34,7 +34,7 @@
                 android:gravity="bottom|center"
                 android:text="回退"
                 android:textColor="@drawable/masking_left_text_selector"
-                android:textSize="10dp"/>
+                android:textSize="10dp" />
 
             <Button
                 android:id="@+id/masking_rotate"
@@ -46,7 +46,7 @@
                 android:gravity="bottom|center"
                 android:text="右转90度"
                 android:textColor="@drawable/masking_left_text_selector"
-                android:textSize="10dp"/>
+                android:textSize="10dp" />
 
             <Button
                 android:id="@+id/masking_masking"
@@ -58,7 +58,7 @@
                 android:gravity="bottom|center"
                 android:text="涂鸦"
                 android:textColor="@drawable/masking_right_text_selector"
-                android:textSize="10dp"/>
+                android:textSize="10dp" />
 
             <Button
                 android:id="@+id/masking_drag"
@@ -70,7 +70,7 @@
                 android:gravity="bottom|center"
                 android:text="移动／缩放"
                 android:textColor="@drawable/masking_right_text_selector"
-                android:textSize="10dp"/>
+                android:textSize="10dp" />
         </LinearLayout>
 
         <Button
@@ -85,21 +85,20 @@
             android:gravity="center"
             android:text="完成"
             android:textColor="@color/colorWhite"
-            android:textSize="17sp"/>
+            android:textSize="17sp" />
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/masking_finishLayout"
-        android:layout_below="@id/masking_buttonLayout">
+        android:layout_above="@id/masking_finishLayout">
 
         <com.joelzhu.maskingboard.views.JZMaskingView
             android:id="@+id/masking_maskingView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#464646"
-            android:scaleType="matrix"/>
+            android:scaleType="matrix" />
 
         <TextView
             android:id="@+id/masking_maskingHint"
@@ -110,6 +109,6 @@
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
             android:text="@string/masking_hint"
-            android:textColor="@color/colorWhite"/>
+            android:textColor="@color/colorWhite" />
     </FrameLayout>
 </RelativeLayout>

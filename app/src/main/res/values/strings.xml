@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">涂鸦板</string>
+    <string name="title_camera">相机</string>
+    <string name="title_masking">涂鸦</string>
+    <string name="camera_hint">拍摄想要进行涂鸦的画面</string>
+    <string name="masking_hint">请注意涂抹姓名、住址、电话等个人信息</string>
+    <string name="permission_require">未授予所有权限。</string>
+    <string name="permission_storage">请在系统应用程序设定中授予权限。</string>
+    <string name="permission_ok">未授予存储权限，应用将无法正常使用。</string>
+</resources>
