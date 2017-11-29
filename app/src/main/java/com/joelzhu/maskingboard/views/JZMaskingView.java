@@ -310,6 +310,7 @@ public class JZMaskingView extends AppCompatImageView {
         path = new Path();
         paths = new ArrayList<>();
         pathColors = new ArrayList<>();
+        currentPaintColor = Color.BLACK;
 
         // 设置画笔对象
         paint.reset();
