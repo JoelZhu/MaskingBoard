@@ -14,6 +14,7 @@
     <string name="masking_masking">塗りつぶし</string>
     <string name="masking_drag">移動/拡大</string>
     <string name="masking_done">完成</string>
+    <string name="masking_menu_paint">ブラシ</string>
 
     <!-- 权限提示 -->
     <string name="permission_require">全部の許可が付与されていません。\nシステムアプリケーション設定で許可を付与してください。</string>

@@ -1,5 +1,7 @@
 package com.joelzhu.maskingboard.activities;
 
+import android.app.ActionBar;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -7,8 +9,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 
 import com.joelzhu.maskingboard.R;
@@ -18,6 +24,7 @@ import com.joelzhu.maskingboard.tasks.PictureSaveAsyncTask;
 import com.joelzhu.maskingboard.utils.JZConsts;
 import com.joelzhu.maskingboard.utils.JZDisplayUtils;
 import com.joelzhu.maskingboard.utils.JZFileUtils;
+import com.joelzhu.maskingboard.views.JZColorPicker;
 import com.joelzhu.maskingboard.views.JZMaskingView;
 
 public class MaskingActivity extends BaseActivity implements View.OnClickListener, JZMaskingView
@@ -44,11 +51,16 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     // 按钮
     private Button undoButton, maskingButton, dragButton;
 
+    // 菜单栏弹出框
+    private PopupWindow popupWindow;
+    private int popupWindowOffsetY;
+
     @Override
     protected LayoutAttrs setLayoutAttributes() {
         return new LayoutAttrs.Builder()
                 .layout(R.layout.activity_masking)
                 .title(R.string.title_masking)
+                .menu(R.menu.menu_masking)
                 .hasToolbar(true)
                 .create();
     }
@@ -84,6 +96,21 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         maskingHint.measure(w, h);
         int height = maskingHint.getMeasuredHeight();
         jzMaskingView.setOffsetHeight(height);
+
+        final LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (inflater != null) {
+            final View menuView = inflater.inflate(R.layout.layout_colorpicker, null);
+            ((JZColorPicker) menuView.findViewById(R.id.masking_colorPicker))
+                    .setOnColorChangeListener(new JZColorPicker.OnColorChangeListener() {
+                        @Override
+                        public void onColorChange(int red, int green, int blue) {
+                            jzMaskingView.setPaintColor(red, green, blue);
+                        }
+                    });
+            popupWindow = new PopupWindow(menuView);
+            popupWindow.setWidth(ActionBar.LayoutParams.WRAP_CONTENT);
+            popupWindow.setHeight(ActionBar.LayoutParams.WRAP_CONTENT);
+        }
     }
 
     @Override
@@ -95,6 +122,19 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
             bitmap.recycle();
             bitmap = null;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // 画笔
+            case R.id.menu_paint:
+                // 打开/关闭PopupWindow
+                togglePopupWindow();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -147,10 +187,14 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onBackPressed() {
-        // 点击回退键，删除全局Bitmap
-        JZFileUtils.destroyBitmap();
+        if (popupWindow.isShowing())
+            popupWindow.dismiss();
+        else {
+            // 点击回退键，删除全局Bitmap
+            JZFileUtils.destroyBitmap();
 
-        super.onBackPressed();
+            super.onBackPressed();
+        }
     }
 
     /**
@@ -235,6 +279,32 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
             jzMaskingView.setImageBitmap(destBitmap);
         } else {
             Log.d(JZConsts.LogTag, "Masking OnCreate bitmap is null");
+        }
+    }
+
+    /**
+     * 如果PopupWindow打开，则关闭，如果PopupWindow关闭，则打开
+     */
+    private void togglePopupWindow() {
+        if (popupWindow.isShowing())
+            popupWindow.dismiss();
+        else {
+            if (popupWindowOffsetY == 0) {
+                // 获取状态栏高度
+                int statusBarHeight = 0;
+                final int resourceId = getResources().getIdentifier("status_bar_height",
+                        "dimen", "android");
+                if (resourceId > 0) {
+                    //根据资源ID获取响应的尺寸值
+                    statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+                }
+                // 获取Toolbar高度
+                final int toolbarHeight = findViewById(R.id.base_toolbar).getHeight();
+                // 计算出PopupWindow的Y轴偏移量
+                popupWindowOffsetY = statusBarHeight + toolbarHeight;
+            }
+
+            popupWindow.showAtLocation(jzMaskingView, Gravity.TOP | Gravity.RIGHT, 0, popupWindowOffsetY);
         }
     }
 }

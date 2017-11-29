@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -52,8 +53,9 @@ public abstract class BaseActivity extends Activity {
 
         // 设置页面Layout
         if (lAttrs.getLayoutId() != 0) {
-            ((LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(
-                    lAttrs.getLayoutId(), (FrameLayout) findViewById(R.id.base_content));
+            final LayoutInflater inflater = ((LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE));
+            if (inflater != null)
+                inflater.inflate(lAttrs.getLayoutId(), (FrameLayout) findViewById(R.id.base_content));
         } else {
             // 没有Layout页面
             toolbar.setVisibility(View.GONE);
@@ -72,6 +74,17 @@ public abstract class BaseActivity extends Activity {
             } else {
                 // 默认标题
                 toolbar.setTitle(R.string.app_name);
+            }
+
+            // 设置页面菜单
+            if (lAttrs.getMenuId() != 0) {
+                toolbar.inflateMenu(lAttrs.getMenuId());
+                toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return onOptionsItemSelected(item);
+                    }
+                });
             }
         } else {
             // 隐藏Toolbar

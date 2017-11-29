@@ -15,6 +15,9 @@ public class LayoutAttrs {
     // 页面标题Id
     private int titleId;
 
+    // 菜单Id
+    private int menuId;
+
     /**
      * 私有无参构造函数
      */
@@ -33,6 +36,10 @@ public class LayoutAttrs {
         return titleId;
     }
 
+    public int getMenuId() {
+        return menuId;
+    }
+
     public static class Builder {
         private LayoutAttrs attrs = new LayoutAttrs();
 
@@ -48,6 +55,11 @@ public class LayoutAttrs {
 
         public Builder hasToolbar(boolean hasToolBar) {
             attrs.hasToolbar = hasToolBar;
+            return this;
+        }
+
+        public Builder menu(int menuId) {
+            attrs.menuId = menuId;
             return this;
         }
 

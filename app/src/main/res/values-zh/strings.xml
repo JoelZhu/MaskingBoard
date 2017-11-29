@@ -14,6 +14,7 @@
     <string name="masking_masking">涂鸦</string>
     <string name="masking_drag">移动/缩放</string>
     <string name="masking_done">完成</string>
+    <string name="masking_menu_paint">画笔</string>
 
     <!-- 权限提示 -->
     <string name="permission_require">未授予所有权限。\n请在系统应用程序设定中授予权限。</string>

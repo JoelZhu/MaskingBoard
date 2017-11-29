@@ -35,6 +35,10 @@ public class JZMaskingView extends AppCompatImageView {
     private Path path;
     // 涂鸦线数组
     private List<Path> paths;
+    // 涂鸦线颜色数组
+    private List<Integer> pathColors;
+    // 当前画笔颜色
+    private int currentPaintColor;
 
     // 涂鸦模式
     private static final int MODE_MASKING = 0;
@@ -154,9 +158,14 @@ public class JZMaskingView extends AppCompatImageView {
         // 绘制所有涂鸦线
         canvas.concat(matrix);
 
-        for (Path tempPath : paths) {
-            canvas.drawPath(tempPath, paint);
+        final int size = paths.size();
+        for (int i = 0; i < size; i++) {
+            // 设置画笔颜色
+            paint.setColor(pathColors.get(i));
+            // 绘制涂鸦线
+            canvas.drawPath(paths.get(i), paint);
         }
+        paint.setColor(currentPaintColor);
         canvas.drawPath(path, paint);
     }
 
@@ -186,6 +195,7 @@ public class JZMaskingView extends AppCompatImageView {
                     // 绘制涂鸦线终点
                     path.lineTo((e.getX() - offsetPoint.x) / zoomScale, (e.getY() - offsetPoint.y) / zoomScale);
                     paths.add(path);
+                    pathColors.add(currentPaintColor);
                     invalidate();
                     break;
             }
@@ -299,11 +309,12 @@ public class JZMaskingView extends AppCompatImageView {
         paint = new Paint();
         path = new Path();
         paths = new ArrayList<>();
+        pathColors = new ArrayList<>();
 
         // 设置画笔对象
         paint.reset();
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(75f);
+        paint.setStrokeWidth(50);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.BLACK);
         paint.setStrokeJoin(Paint.Join.ROUND);
@@ -321,9 +332,11 @@ public class JZMaskingView extends AppCompatImageView {
         path.reset();
         if (canUndo()) {
             paths.remove(paths.size() - 1);
+            pathColors.remove(pathColors.size() - 1);
             invalidate();
+
             if (listener != null) {
-                // notify listener that paths sum has changed
+                // 涂鸦线数量发生变更
                 listener.onPathCountChange();
             }
         }
@@ -602,6 +615,17 @@ public class JZMaskingView extends AppCompatImageView {
         Canvas canvas = new Canvas(bitmap);
         draw(canvas);
         return bitmap;
+    }
+
+    /**
+     * 设置画笔颜色
+     *
+     * @param red   R
+     * @param green G
+     * @param blue  B
+     */
+    public void setPaintColor(int red, int green, int blue) {
+        this.currentPaintColor = Color.rgb(red, green, blue);
     }
 
     /**
