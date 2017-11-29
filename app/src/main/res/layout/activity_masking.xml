@@ -25,14 +25,14 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/masking_goBack"
+                android:id="@+id/masking_undo"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/colorWhite"
                 android:gravity="bottom|center"
-                android:text="回退"
+                android:text="@string/masking_undo"
                 android:textColor="@drawable/masking_left_text_selector"
                 android:textSize="10dp" />
 
@@ -44,8 +44,8 @@
                 android:layout_weight="1"
                 android:background="@color/colorWhite"
                 android:gravity="bottom|center"
-                android:text="右转90度"
-                android:textColor="@drawable/masking_left_text_selector"
+                android:text="@string/masking_rotate"
+                android:textColor="@drawable/masking_right_text_selector"
                 android:textSize="10dp" />
 
             <Button
@@ -56,7 +56,7 @@
                 android:layout_weight="1"
                 android:background="@color/colorWhite"
                 android:gravity="bottom|center"
-                android:text="涂鸦"
+                android:text="@string/masking_masking"
                 android:textColor="@drawable/masking_right_text_selector"
                 android:textSize="10dp" />
 
@@ -68,13 +68,13 @@
                 android:layout_weight="1"
                 android:background="@color/colorWhite"
                 android:gravity="bottom|center"
-                android:text="移动／缩放"
+                android:text="@string/masking_drag"
                 android:textColor="@drawable/masking_right_text_selector"
                 android:textSize="10dp" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/masking_finish"
+            android:id="@+id/masking_done"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -83,7 +83,7 @@
             android:layout_weight="1"
             android:background="@drawable/button_masking_selector"
             android:gravity="center"
-            android:text="完成"
+            android:text="@string/masking_done"
             android:textColor="@color/colorWhite"
             android:textSize="17sp" />
     </LinearLayout>

@@ -42,7 +42,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     private Uri uri;
 
     // 按钮
-    private Button goBackButton, maskingButton, dragButton;
+    private Button undoButton, maskingButton, dragButton;
 
     @Override
     protected LayoutAttrs setLayoutAttributes() {
@@ -87,8 +87,8 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
 
         // 回收Bitmap
         if (bitmap != null) {
@@ -106,8 +106,8 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
         switch (view.getId()) {
             // 回退
-            case R.id.masking_goBack:
-                jzMaskingView.goBack();
+            case R.id.masking_undo:
+                jzMaskingView.undo();
                 break;
 
             // 涂鸦
@@ -130,7 +130,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
                 break;
 
             // 保存
-            case R.id.masking_finish:
+            case R.id.masking_done:
                 new PictureSaveAsyncTask(this, jzMaskingView, progressBar).execute(uri);
                 break;
         }
@@ -138,10 +138,10 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onPathCountChange() {
-        if (jzMaskingView.canGoBack()) {
-            goBackButton.setEnabled(true);
+        if (jzMaskingView.canUndo()) {
+            undoButton.setEnabled(true);
         } else {
-            goBackButton.setEnabled(false);
+            undoButton.setEnabled(false);
         }
     }
 
@@ -160,7 +160,7 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         jzMaskingView = (JZMaskingView) findViewById(R.id.masking_maskingView);
         progressBar = (ProgressBar) findViewById(R.id.base_progressBar);
 
-        goBackButton = (Button) findViewById(R.id.masking_goBack);
+        undoButton = (Button) findViewById(R.id.masking_undo);
         maskingButton = (Button) findViewById(R.id.masking_masking);
         dragButton = (Button) findViewById(R.id.masking_drag);
         Button rotateButton = (Button) findViewById(R.id.masking_rotate);
@@ -169,9 +169,9 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         final int iconWidth = JZDisplayUtils.dp2Px(this, BUTTON_ICON_WIDTH);
         final int iconHeight = JZDisplayUtils.dp2Px(this, BUTTON_ICON_HEIGHT);
         // 设置回退按钮图标大小
-        Drawable goBackDrawable = getResources().getDrawable(R.drawable.back_icon_selector);
-        goBackDrawable.setBounds(0, 0, iconWidth, iconHeight);
-        goBackButton.setCompoundDrawables(null, goBackDrawable, null, null);
+        Drawable undoDrawable = getResources().getDrawable(R.drawable.undo_icon_selector);
+        undoDrawable.setBounds(0, 0, iconWidth, iconHeight);
+        undoButton.setCompoundDrawables(null, undoDrawable, null, null);
         // 设置涂鸦按钮图标大小
         Drawable maskingDrawable = getResources().getDrawable(R.drawable.masking_icon_selector);
         maskingDrawable.setBounds(0, 0, iconWidth, iconHeight);
@@ -185,13 +185,13 @@ public class MaskingActivity extends BaseActivity implements View.OnClickListene
         rotateDrawable.setBounds(0, 0, iconWidth, iconHeight);
         rotateButton.setCompoundDrawables(null, rotateDrawable, null, null);
 
-        goBackButton.setOnClickListener(this);
+        undoButton.setOnClickListener(this);
         maskingButton.setOnClickListener(this);
         dragButton.setOnClickListener(this);
         rotateButton.setOnClickListener(this);
-        findViewById(R.id.masking_finish).setOnClickListener(this);
+        findViewById(R.id.masking_done).setOnClickListener(this);
 
-        goBackButton.setEnabled(false);
+        undoButton.setEnabled(false);
         dragButton.setSelected(true);
 
         jzMaskingView.setOnPathCountChangeListener(this);

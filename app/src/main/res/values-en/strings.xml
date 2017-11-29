@@ -4,10 +4,18 @@
     <string name="title_camera">Camera</string>
     <string name="title_masking">Masking</string>
 
+    <!-- 拍照页面 -->
     <string name="camera_hint">Please take a picture before masking</string>
-    <string name="masking_hint">Please notice your personal information:\nName, Address, Phone Number</string>
 
-    <!-- 权限 -->
+    <!-- 涂鸦页面 -->
+    <string name="masking_hint">Please notice your personal information:\nName, Address, Phone Number</string>
+    <string name="masking_undo">Undo</string>
+    <string name="masking_rotate">Rotate</string>
+    <string name="masking_masking">Masking</string>
+    <string name="masking_drag">Drag/Zoom</string>
+    <string name="masking_done">Done</string>
+
+    <!-- 权限提示 -->
     <string name="permission_require">Application never granted all permissions.\nGrant the permissions in the system application settings.</string>
     <string name="permission_storage">Storage permission is not granted, Application can not be in use normally.</string>
     <string name="permission_ok">OK</string>

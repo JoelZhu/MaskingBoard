@@ -315,11 +315,11 @@ public class JZMaskingView extends AppCompatImageView {
     }
 
     /**
-     * 回退（如果可以的话）
+     * 撤销（如果可以的话）
      */
-    public void goBack() {
+    public void undo() {
         path.reset();
-        if (canGoBack()) {
+        if (canUndo()) {
             paths.remove(paths.size() - 1);
             invalidate();
             if (listener != null) {
@@ -330,11 +330,11 @@ public class JZMaskingView extends AppCompatImageView {
     }
 
     /**
-     * 判断是否可以回退
+     * 判断是否可以撤销
      *
      * @return true - 可以回退; false - 不能回退
      */
-    public boolean canGoBack() {
+    public boolean canUndo() {
         return paths.size() > 0;
     }
 
