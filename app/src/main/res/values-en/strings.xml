@@ -14,7 +14,7 @@
     <string name="masking_masking">Masking</string>
     <string name="masking_drag">Drag/Zoom</string>
     <string name="masking_done">Done</string>
-    <string name="masking_menu_paint">Paint</string>
+    <string name="masking_menu_paint">Brushes</string>
 
     <!-- 权限提示 -->
     <string name="permission_require">Application never granted all permissions.\nGrant the permissions in the system application settings.</string>

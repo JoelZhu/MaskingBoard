@@ -178,7 +178,6 @@ public class JZMaskingView extends AppCompatImageView {
                 // 按下事件
                 case MotionEvent.ACTION_DOWN:
                     // 绘制涂鸦线起点
-                    path = new Path();
                     path.moveTo((e.getX() - offsetPoint.x) / zoomScale, (e.getY() - offsetPoint.y) / zoomScale);
                     invalidate();
                     return true;
@@ -195,6 +194,7 @@ public class JZMaskingView extends AppCompatImageView {
                     // 绘制涂鸦线终点
                     path.lineTo((e.getX() - offsetPoint.x) / zoomScale, (e.getY() - offsetPoint.y) / zoomScale);
                     paths.add(path);
+                    path = new Path();
                     pathColors.add(currentPaintColor);
                     invalidate();
                     break;
