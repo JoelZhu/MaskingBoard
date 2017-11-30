@@ -165,8 +165,11 @@ public class JZMaskingView extends AppCompatImageView {
             // 绘制涂鸦线
             canvas.drawPath(paths.get(i), paint);
         }
-        paint.setColor(currentPaintColor);
-        canvas.drawPath(path, paint);
+        // 当前Path不为空，绘制该Path
+        if (!path.isEmpty()) {
+            paint.setColor(currentPaintColor);
+            canvas.drawPath(path, paint);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
