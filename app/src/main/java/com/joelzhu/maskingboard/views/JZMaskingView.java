@@ -40,14 +40,16 @@ public class JZMaskingView extends AppCompatImageView {
     // 当前画笔颜色
     private int currentPaintColor;
 
+    // 默认模式
+    private static final int MODE_DEFAULT = 0;
     // 涂鸦模式
-    private static final int MODE_MASKING = 0;
+    private static final int MODE_MASKING = 1;
     // 拉拽模式
-    private static final int MODE_DRAG = 1;
+    private static final int MODE_DRAG = 2;
     // 缩放模式
-    private static final int MODE_ZOOM = 2;
+    private static final int MODE_ZOOM = 3;
     // 控件当前模式
-    private int currentMode = MODE_MASKING;
+    private int currentMode = MODE_DEFAULT;
 
     private PointF startPoint = new PointF();
     private Matrix matrix = new Matrix();
@@ -68,7 +70,6 @@ public class JZMaskingView extends AppCompatImageView {
     private int windowHeight;
     private int offsetHeight;
 
-    private boolean isMasking = true;
     private boolean isFirst = true;
 
     /**
@@ -176,7 +177,7 @@ public class JZMaskingView extends AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         // 当前处于涂鸦模式中
-        if (isMasking) {
+        if (currentMode == MODE_MASKING) {
             switch (e.getAction()) {
                 // 按下事件
                 case MotionEvent.ACTION_DOWN:
@@ -264,7 +265,7 @@ public class JZMaskingView extends AppCompatImageView {
                         float dx = e.getX() - startPoint.x;
                         float dy = e.getY() - startPoint.y;
                         correctWidgetPosition(dx, dy);
-                        currentMode = MODE_MASKING;
+                        currentMode = MODE_DEFAULT;
                     }
                     break;
 
@@ -293,7 +294,7 @@ public class JZMaskingView extends AppCompatImageView {
                         offsetPoint.set((midPoint.x - offsetPoint.x) * (1 - scaleTemp) + offsetPoint.x,
                                 (midPoint.y - offsetPoint.y) * (1 - scaleTemp) + offsetPoint.y);
                         zoomScale = zoomScale * scaleTemp;
-                        currentMode = MODE_MASKING;
+                        currentMode = MODE_DEFAULT;
                     }
                     break;
             }
@@ -366,7 +367,7 @@ public class JZMaskingView extends AppCompatImageView {
             // 初始化图片位置
             initWidgetPosition();
         }
-        this.isMasking = isMasking;
+        currentMode = isMasking ? MODE_MASKING : MODE_DRAG;
     }
 
     /**
